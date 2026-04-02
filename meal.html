@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4-Week Lean Bulk Meal Plan</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--green:#2d6a4f;--green2:#40916c;--green3:#52b788;--pale:#d8f3dc;--cream:#fff8f0;--orange:#e76f51;--blue:#264653;--sunday:#fff3e0;--gray:#f5f5f5;--border:#e0e0e0;--text:#1b4332;--textlight:#555}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f0f4f0;color:var(--text);line-height:1.5}
+.container{max-width:1300px;margin:0 auto;padding:16px}
+header{background:linear-gradient(135deg,var(--green),var(--green2));color:#fff;padding:28px 32px;border-radius:16px;margin-bottom:20px;text-align:center}
+header h1{font-size:1.8em;margin-bottom:6px;letter-spacing:-0.5px}
+header p{opacity:.85;font-size:.95em}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+.stat{background:#fff;border-radius:12px;padding:16px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.stat .val{font-size:1.6em;font-weight:700;color:var(--green)}
+.stat .val.prot{color:var(--blue)}.stat .val.carb{color:var(--green3)}.stat .val.fat{color:var(--orange)}
+.stat .label{font-size:.78em;color:var(--textlight);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.tab{padding:10px 20px;border-radius:10px;cursor:pointer;font-weight:600;font-size:.9em;border:2px solid var(--border);background:#fff;transition:all .2s}
+.tab:hover{border-color:var(--green3);background:var(--pale)}
+.tab.active{background:var(--green);color:#fff;border-color:var(--green)}
+.sub-tabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.sub-tab{padding:7px 16px;border-radius:8px;cursor:pointer;font-size:.85em;border:1px solid var(--border);background:#fff;transition:all .2s}
+.sub-tab:hover{background:var(--pale)}
+.sub-tab.active{background:var(--green2);color:#fff;border-color:var(--green2)}
+.sub-tab.sunday{border-color:var(--orange)}
+.sub-tab.sunday.active{background:var(--orange)}
+.view-toggle{display:flex;gap:6px;margin-bottom:16px}
+.vt-btn{padding:8px 18px;border-radius:8px;cursor:pointer;font-size:.85em;font-weight:600;border:2px solid var(--border);background:#fff;transition:all .2s}
+.vt-btn:hover{border-color:var(--green3)}
+.vt-btn.active{background:var(--green);color:#fff;border-color:var(--green)}
+.day-card{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:16px}
+.day-card.sunday{border:2px solid var(--orange)}
+.day-header{padding:14px 20px;font-weight:700;font-size:1.05em;display:flex;justify-content:space-between;align-items:center}
+.day-header.sun{background:var(--sunday);color:var(--orange)}
+.day-header:not(.sun){background:var(--pale);color:var(--green)}
+.day-totals{font-size:.8em;font-weight:500;display:flex;gap:12px}
+.day-totals span{padding:3px 8px;border-radius:6px;background:rgba(255,255,255,.7)}
+.meal-row{display:grid;grid-template-columns:100px 1fr 200px;gap:0;border-bottom:1px solid var(--border);transition:background .15s}
+.meal-row:hover{background:var(--gray)}
+.meal-row:last-child{border-bottom:none}
+.meal-label{padding:14px 16px;font-weight:700;font-size:.82em;text-transform:uppercase;letter-spacing:.5px;color:var(--green2);display:flex;align-items:center;border-right:1px solid var(--border)}
+.meal-content{padding:14px 18px}
+.meal-name{font-weight:700;font-size:.95em;margin-bottom:4px;color:var(--text)}
+.meal-ingredients{font-size:.82em;color:var(--textlight);margin-bottom:6px}
+.meal-meta{display:flex;gap:8px;flex-wrap:wrap;font-size:.78em}
+.meal-meta .tag{padding:2px 8px;border-radius:5px;background:var(--pale);color:var(--green)}
+.meal-meta .cook{background:#e8f4f8;color:var(--blue)}
+.meal-macros{padding:14px 16px;display:flex;flex-direction:column;justify-content:center;gap:4px;border-left:1px solid var(--border);font-size:.82em}
+.macro-row{display:flex;justify-content:space-between;align-items:center}
+.macro-row .k{font-weight:700;color:var(--green)}
+.macro-row .p{color:var(--blue)}.macro-row .c{color:var(--green3)}.macro-row .f{color:var(--orange)}
+.prep-note{font-size:.78em;color:var(--textlight);font-style:italic;margin-top:4px}
+/* Grocery */
+.grocery-section{background:#fff;border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.grocery-section h3{font-size:1em;color:var(--green);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--pale)}
+.grocery-item{display:flex;align-items:center;padding:8px 4px;border-bottom:1px solid #f0f0f0;font-size:.88em;gap:10px}
+.grocery-item:last-child{border-bottom:none}
+.grocery-item input[type=checkbox]{width:18px;height:18px;accent-color:var(--green);cursor:pointer}
+.grocery-item.checked{opacity:.45;text-decoration:line-through}
+.grocery-item .qty{color:var(--green2);font-weight:600;min-width:80px;text-align:right}
+.grocery-item .name{flex:1}
+/* Meal Prep */
+.prep-section{background:#fff;border-radius:14px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,.06);margin-bottom:16px}
+.prep-section h3{font-size:1.05em;color:var(--green);margin-bottom:4px}
+.prep-section .subtitle{font-size:.82em;color:var(--textlight);margin-bottom:14px;font-style:italic}
+.prep-step{display:flex;gap:12px;padding:10px 4px;border-bottom:1px solid #f0f0f0;font-size:.88em;align-items:flex-start}
+.prep-step:last-child{border-bottom:none}
+.prep-step .num{background:var(--green);color:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8em;flex-shrink:0}
+.prep-step input[type=checkbox]{width:18px;height:18px;accent-color:var(--green);cursor:pointer;margin-top:3px;flex-shrink:0}
+.prep-step.checked{opacity:.45;text-decoration:line-through}
+.hidden{display:none}
+.easy-badge{background:var(--orange);color:#fff;font-size:.7em;padding:2px 8px;border-radius:5px;font-weight:600;margin-left:8px}
+@media(max-width:768px){
+.meal-row{grid-template-columns:1fr;}.meal-label{border-right:none;border-bottom:1px solid var(--border);padding:8px 16px}
+.meal-macros{border-left:none;border-top:1px solid var(--border);flex-direction:row;flex-wrap:wrap;gap:10px;padding:10px 16px}
+.stats{grid-template-columns:repeat(2,1fr)}.day-totals{flex-wrap:wrap;gap:6px}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>4-Week Lean Bulk Meal Plan</h1>
+<p>~2200 kcal daily | High protein for muscle growth | Pan, Airfryer, Cook4Me, Grill | Sunday = easy digestion day</p>
+</header>
+
+<div class="stats" id="weekStats"></div>
+
+<div class="tabs" id="weekTabs"></div>
+<div class="view-toggle">
+<div class="vt-btn active" onclick="setView('meals')">Meals</div>
+<div class="vt-btn" onclick="setView('grocery')">Grocery List</div>
+<div class="vt-btn" onclick="setView('prep')">Meal Prep</div>
+</div>
+<div class="sub-tabs" id="dayTabs"></div>
+
+<div id="content"></div>
+</div>
+
+<script>
+const DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const MEALS=["Breakfast","Lunch","Dinner","Snack"];
+
+// [name, ingredients, kcal, protein, carbs, fat, method, prep_note]
+const weeks={
+"Week 1":[
+[["Greek Yogurt Power Bowl","Greek yogurt 250g, oats 50g, banana 1, honey 15g, walnuts 20g, whey protein 15g",500,38,60,14,"No cook","Mix oats+protein into yogurt night before"],
+["Grilled Chicken & Rice Bowl","Chicken breast 200g, basmati rice 100g dry, broccoli 150g, olive oil 10ml, soy sauce",620,52,70,12,"Pan + rice cooker","Batch cook rice for 3 days; grill chicken on pan"],
+["Beef Stir-Fry with Noodles","Lean beef strips 180g, egg noodles 100g, bell peppers 100g, zucchini 80g, garlic, ginger, soy sauce, sesame oil 10ml",650,46,64,22,"Pan (high heat)","Slice veggies and beef ahead; cook noodles 3 min"],
+["Cottage Cheese & Almonds","Cottage cheese 200g, almonds 25g, cucumber slices, rice cake 1",280,28,14,14,"No cook","Prep in container morning of"]],
+
+[["Scrambled Eggs on Toast","Eggs 3, whole grain bread 2 slices, cherry tomatoes 80g, feta 25g, butter 5g",490,32,36,26,"Pan (low heat)","Scramble eggs slowly for creamy texture"],
+["Turkey Meatballs & Couscous","Ground turkey 180g, couscous 80g dry, spinach 100g, cherry tomatoes 80g, olive oil 5ml, oregano, garlic",580,48,58,14,"Pan + boil","Batch prep meatballs for 2 days; couscous 5 min"],
+["Pressure Cooker Chicken Curry","Chicken thigh 200g, chickpeas 100g canned, coconut milk 80ml, tomato passata 100ml, onion, garlic, curry powder, rice 80g",700,50,62,24,"Cook4Me","Dump all in Cook4Me 15 min pressure; rice separate"],
+["Protein Shake","Whey protein 35g, milk 300ml, banana 1/2, oats 20g",310,38,30,6,"Blender","Blend 30 sec"]],
+
+[["Oatmeal with Berries & Seeds","Oats 70g, milk 250ml, mixed berries 100g, chia seeds 15g, peanut butter 20g, honey 10g",510,22,65,20,"Microwave/stovetop","Overnight oats or 3 min microwave"],
+["Tuna Salad Wrap","Tuna canned 160g, whole wheat tortilla 1 large, lettuce, tomato, red onion, Greek yogurt 40g, mustard, side fruit",490,42,40,14,"No cook","Mix tuna salad batch for 2 days"],
+["Airfryer Salmon & Sweet Potato","Salmon fillet 200g, sweet potato 250g, green beans 120g, lemon, olive oil 10ml",660,44,56,26,"Airfryer","Cube sweet potato airfry 18 min; salmon 12 min 180C"],
+["Rice Cakes & PB","Rice cakes 3, peanut butter 25g, banana slices, honey drizzle",280,10,38,12,"No cook","Assemble in 1 min"]],
+
+[["Egg & Veggie Muffins + Toast","Eggs 3, bell pepper 50g, spinach 40g, feta 25g, oat flour 20g, whole grain toast 1 w/ butter",480,32,24,28,"Airfryer/oven","Batch make 6 muffins Sunday; reheat 2 min"],
+["Chicken Shawarma Bowl","Chicken breast 200g, bulgur wheat 80g, cucumber 80g, tomato 80g, red onion, tahini 20g, lemon, spices",620,50,58,18,"Pan/grill","Marinate chicken night before; bulgur 12 min"],
+["Pork Loin with Roasted Veggies","Pork loin 200g, potatoes 180g, carrots 100g, brussels sprouts 100g, olive oil 10ml, rosemary",640,48,52,20,"Airfryer","Cube everything; airfry 22 min at 190C"],
+["Skyr with Berries & Granola","Skyr 200g, blueberries 80g, granola 25g, honey 5g",270,26,32,4,"No cook","Prep in jar"]],
+
+[["Avocado Toast & Eggs","Whole grain bread 2 slices, avocado 1/2, eggs 2 poached, chili flakes, feta 15g",490,26,38,28,"Pan (poach)","Poach eggs 3 min in simmering water"],
+["Beef & Bean Chili","Lean ground beef 160g, kidney beans 100g, tomato passata 150ml, onion, garlic, cumin, paprika, rice 80g",650,46,66,18,"Cook4Me","Pressure cook 20 min; great for batch"],
+["Grilled Greek Chicken","Chicken breast 200g, quinoa 80g, roasted red peppers 80g, olives 25g, feta 30g, olive oil 10ml, oregano",640,52,52,22,"Grill + pan","Grill chicken 6 min/side; quinoa 15 min"],
+["Protein Bar & Apple","Protein bar 1, apple 1 medium, handful almonds 15g",320,24,40,10,"No cook","Grab and go"]],
+
+[["Pancakes with Greek Yogurt","Oat flour 70g, egg 1, milk 120ml, baking powder, Greek yogurt 120g, maple syrup 15ml, berries 100g",500,28,62,14,"Pan","Mix batter in blender; cook 2 min/side"],
+["Shrimp Fried Rice","Shrimp 180g, rice 100g use leftover, egg 2, peas 60g, carrots 50g, soy sauce, sesame oil 5ml, spring onion",580,42,64,14,"Pan (high heat)","Use day-old rice for best results"],
+["BBQ Chicken Thighs & Corn","Chicken thighs 200g, corn on cob 1, coleslaw 120g w/ yogurt dressing, BBQ sauce 25ml, potato salad 80g",660,48,56,24,"Grill","Grill chicken 8 min/side; corn 10 min"],
+["Hummus & Veggies + Crackers","Hummus 70g, carrot sticks 80g, cucumber 60g, bell pepper 60g, whole grain crackers 4",250,10,26,12,"No cook","Prep veggie sticks Sunday"]],
+
+[["Simple Scrambled Eggs & Toast","Eggs 2, whole grain toast 2, butter 5g, fruit salad 100g",400,22,40,16,"Pan","Low and slow scramble 3 min"],
+["Chicken Noodle Soup","Chicken breast 130g, egg noodles 70g, carrots 60g, celery 40g, chicken broth 400ml, dill",420,34,44,10,"Cook4Me","Pressure cook 10 min - gentle on stomach"],
+["Simple Baked Potato & Tuna","Baked potato 280g, tuna canned 120g, Greek yogurt 50g, chives, side salad",480,34,58,10,"Airfryer","Airfry potato 35 min at 200C"],
+["Banana & Almond Butter","Banana 1, almond butter 20g, rice cake 1",240,6,34,10,"No cook","Simple and easy to digest"]]
+],
+"Week 2":[
+[["Protein Smoothie Bowl","Whey protein 30g, frozen berries 120g, banana 1, oats 40g, milk 200ml, coconut flakes 15g, granola 15g",510,34,62,14,"Blender","Blend thick; top with oats and coconut"],
+["Mediterranean Chicken Wrap","Chicken breast 180g, whole wheat tortilla 1 large, hummus 40g, lettuce, tomato, red onion, feta 25g",580,48,44,20,"Pan/grill","Use leftover grilled chicken"],
+["Beef Bolognese with Pasta","Lean ground beef 170g, whole wheat pasta 100g, tomato passata 150ml, onion, garlic, carrots 40g, parmesan 15g",670,46,70,20,"Pan + boil","Batch sauce for 3 servings; simmer 20 min"],
+["Greek Yogurt & Walnuts","Greek yogurt 200g, walnuts 25g, honey 10g",290,24,22,14,"No cook","Prep in jar"]],
+
+[["Breakfast Burrito","Eggs 3, whole wheat tortilla 1, black beans 60g, cheese 25g, salsa 30g, avocado 1/4",540,34,42,28,"Pan","Scramble eggs; assemble; can wrap ahead"],
+["Lemon Herb Cod & Potatoes","Cod fillet 200g, baby potatoes 200g, asparagus 120g, lemon, dill, olive oil 10ml",530,44,48,14,"Airfryer","Potatoes 15 min first then fish 10 min at 180C"],
+["Chicken Fajitas","Chicken breast 200g, bell peppers 120g, onion 80g, whole wheat tortilla 2, sour cream 25g, cheese 20g, lime, spices",650,52,54,20,"Pan (high heat)","Slice thin; cook 8 min total"],
+["Cottage Cheese & Pineapple","Cottage cheese 180g, pineapple chunks 100g, almonds 10g",240,24,22,7,"No cook","Prep in container"]],
+
+[["Overnight Oats Chocolate","Oats 60g, milk 250ml, cocoa 10g, whey protein 25g, banana 1, chia seeds 10g",510,34,62,12,"No cook","Mix night before in jar"],
+["Grilled Chicken Caesar Salad","Chicken breast 200g, romaine 120g, parmesan 20g, croutons 25g, light caesar 20ml, egg 1 boiled, bread roll 1",560,52,30,24,"Pan/grill","Grill chicken; boil eggs in batch"],
+["Lamb Kofta with Couscous","Ground lamb 170g, couscous 80g, cucumber yogurt sauce 60g, tomato 80g, onion, pine nuts 10g",660,44,58,26,"Grill/pan","Shape kofta ahead; grill 5 min/side"],
+["Protein Shake","Whey protein 35g, milk 300ml, oats 25g",300,36,32,6,"Blender","Blend 30 sec"]],
+
+[["Smoked Salmon Bagel","Whole wheat bagel 1, smoked salmon 80g, cream cheese 25g, capers, red onion, dill, side fruit",470,28,46,18,"No cook","Assemble in 2 min"],
+["Turkey & Sweet Potato Bowl","Ground turkey 180g, sweet potato 220g, black beans 70g, corn 50g, lime, cilantro, cumin, avocado 1/4",620,46,64,18,"Pan + airfryer","Airfry sweet potato cubes; brown turkey"],
+["Pressure Cooker Beef Stew","Beef chuck 180g, potatoes 180g, carrots 80g, onion, garlic, beef broth 300ml, thyme, crusty bread 1 slice",650,48,54,22,"Cook4Me","20 min pressure cook; tender and rich"],
+["Rice Cakes & Cream Cheese","Rice cakes 3, cream cheese 25g, smoked salmon 35g, cucumber",250,16,30,8,"No cook","Quick assembly"]],
+
+[["French Toast with Berries","Whole grain bread 2, eggs 2, milk 60ml, cinnamon, berries 100g, Greek yogurt 80g, honey 10g",490,30,50,18,"Pan","Soak 30 sec each side; cook 2 min/side"],
+["Spicy Tuna Poke Bowl","Tuna sushi grade 170g, sushi rice 90g, edamame 60g, avocado 1/4, cucumber, soy sauce, sriracha, sesame",600,44,62,18,"No cook + rice","Cook rice; assemble fresh"],
+["Chicken Parmesan & Salad","Chicken breast 200g, panko 25g, marinara 60ml, mozzarella 35g, mixed salad 100g, olive oil 5ml",640,52,32,28,"Airfryer","Bread chicken; airfry 14 min 190C; cheese last 2 min"],
+["Apple & PB","Apple 1, peanut butter 25g, protein bar 1/2",290,10,36,12,"No cook","Slice apple; dip"]],
+
+[["Full Protein Breakfast","Eggs 3, turkey bacon 3 slices, whole grain toast 1, avocado 1/4, tomato 60g",520,36,26,30,"Pan","Pan fry everything; assemble plate"],
+["Pulled Chicken Tacos","Chicken thigh 200g, small corn tortillas 3, cabbage slaw 80g, lime crema 30g, salsa, guacamole 30g",580,46,46,20,"Cook4Me","Pressure cook 12 min; shred with forks"],
+["Steak & Roasted Vegetables","Sirloin steak 200g, zucchini 100g, bell pepper 80g, mushrooms 80g, olive oil 10ml, garlic butter 10g, potato wedges 120g",680,50,28,36,"Grill + airfryer","Grill steak 4 min/side; airfry veggies 15 min"],
+["Skyr & Granola","Skyr 200g, granola 25g, honey 5g, berries 50g",260,26,32,5,"No cook","Layer in glass"]],
+
+[["Porridge with Banana","Oats 60g, milk 300ml, banana 1, cinnamon, honey 10g, peanut butter 10g",440,18,66,12,"Stovetop","Simmer 5 min; mash banana in"],
+["Simple Tomato Soup & Grilled Cheese","Tomato soup passata 300ml onion garlic basil cream 25ml, whole grain bread 2, cheese 35g",480,20,54,22,"Cook4Me + pan","Soup 8 min; grill sandwich on pan"],
+["Baked Chicken & Rice","Chicken drumstick 2 220g, rice 80g, steamed broccoli 120g, lemon, butter 5g",490,40,54,12,"Airfryer + rice","Airfry drumsticks 25 min; easy cleanup"],
+["Banana Smoothie","Banana 1, milk 250ml, honey 10g, oats 15g",240,10,44,4,"Blender","Blend and sip"]]
+],
+"Week 3":[
+[["Egg White Omelette + Toast","Egg whites 5 or 2 whole + 2 whites, spinach 60g, mushrooms 50g, feta 30g, whole grain toast 2, butter 5g",460,38,28,20,"Pan","Whisk whites; cook low heat 4 min"],
+["Chicken Teriyaki Bowl","Chicken breast 200g, jasmine rice 90g, edamame 60g, carrots 50g, teriyaki sauce 25ml, sesame seeds",630,50,68,14,"Pan + rice cooker","Pan-sear chicken; slice on top of rice"],
+["Pork Chops & Apple Slaw","Pork chop 200g, mixed greens 80g, apple 1/2, walnuts 20g, balsamic 10ml, potatoes 180g, olive oil 5ml",670,48,52,26,"Grill + airfryer","Grill chop 5 min/side; airfry potato wedges"],
+["Protein Pudding","Casein protein 35g, milk 200ml, cocoa 5g, banana 1/2",270,32,24,5,"No cook","Mix thick and refrigerate 10 min"]],
+
+[["Shakshuka","Eggs 3, tomato passata 200ml, bell pepper 60g, onion 40g, feta 25g, whole grain bread 2 slices, cumin, paprika",510,30,40,26,"Pan","Simmer sauce 10 min; crack eggs in; cover 5 min"],
+["Asian Beef Lettuce Wraps + Rice","Lean ground beef 170g, lettuce cups 4, water chestnuts 40g, carrots 40g, soy sauce, hoisin 15ml, rice 70g",570,42,54,18,"Pan","Brown beef 5 min; load into lettuce cups"],
+["Airfryer Chicken Thighs & Veggies","Chicken thigh 2 200g, zucchini 100g, cherry tomatoes 80g, potatoes 180g, Italian herbs, olive oil 10ml",660,46,46,26,"Airfryer","Everything in airfryer at 190C for 22 min"],
+["Cottage Cheese & Berries","Cottage cheese 180g, mixed berries 100g, flax seeds 10g, honey 5g",250,24,22,8,"No cook","Prep in container"]],
+
+[["PB & Banana Oats","Oats 60g, milk 250ml, peanut butter 25g, banana 1, whey protein 20g",530,32,62,18,"Microwave","Stir PB and protein into hot oats"],
+["Grilled Fish Tacos","White fish fillet 200g, small tortillas 2, cabbage 60g, mango salsa 60g, yogurt crema 25g, rice side 50g",540,42,50,16,"Grill/pan","Season fish with cumin paprika; grill 4 min/side"],
+["Slow-Cooked Pulled Pork","Pork shoulder 180g, BBQ sauce 25ml, coleslaw 100g vinegar dressing, whole grain bun 1, pickles",660,44,52,26,"Cook4Me","Pressure cook 25 min; shred; mix with sauce"],
+["Skyr & Almonds","Skyr 200g, almonds 20g, honey 5g",260,28,20,8,"No cook","Quick grab"]],
+
+[["Granola & Yogurt Parfait","Greek yogurt 200g, granola 50g, mixed berries 100g, honey 10g, chia seeds 10g",480,28,60,14,"No cook","Layer in glass jar"],
+["Pressure Cooker Chicken & Lentils","Chicken breast 180g, red lentils 70g dry, tomato 100g, onion, garlic, cumin, turmeric, spinach 60g, bread 1 slice",580,52,56,12,"Cook4Me","Everything in 15 min pressure; lentils thicken it"],
+["Steak Fajita Bowl","Sirloin steak 180g, rice 80g, black beans 70g, bell peppers 80g, onion 50g, lime, cumin, sour cream 25g, cheese 15g",680,48,64,22,"Pan + grill","Grill steak; sear veggies hot; assemble bowl"],
+["Hard Boiled Eggs & Crackers","Eggs 2, whole grain crackers 6, cheese 15g",280,20,20,14,"Boil","Batch boil eggs for the week"]],
+
+[["Smashed Avo & Egg Toast","Whole grain bread 2, avocado 1/2, eggs 2 fried, chili flakes, feta 20g, cherry tomatoes 50g",500,24,38,28,"Pan","Fry egg sunny side up; smash avo on toast"],
+["Cajun Shrimp & Grits","Shrimp 180g, polenta 70g dry, bell pepper 60g, garlic, cajun seasoning, butter 10g, spring onion, side salad",550,40,54,18,"Pan + boil","Cook grits 10 min; sear shrimp 3 min"],
+["Lamb Chops & Minted Potatoes","Lamb chops 2 190g, baby potatoes 200g, mint, peas 100g, olive oil 10ml",660,46,48,28,"Grill + boil","Grill chops 4 min/side; boil potatoes with mint"],
+["Protein Bar + Banana","Protein bar 1, banana 1",300,22,40,8,"No cook","Grab and go"]],
+
+[["Protein Waffles","Oat flour 60g, whey protein 30g, egg 1, milk 120ml, baking powder, berries 100g, maple syrup 15ml, Greek yogurt 60g",510,36,54,14,"Pan","Blend batter; cook 3 min/side if no iron"],
+["Vietnamese Pho Bowl","Chicken breast 180g, rice noodles 80g, bean sprouts 60g, bok choy 80g, chicken broth 400ml, lime, sriracha, herbs",540,44,56,12,"Cook4Me + boil","Broth in Cook4Me 10 min; noodles 3 min separately"],
+["BBQ Burger & Sweet Potato Fries","Lean beef patty 180g, whole grain bun 1, lettuce, tomato, onion, cheese 25g, sweet potato fries 180g, olive oil 5ml",690,46,58,28,"Grill + airfryer","Grill patty 4 min/side; airfry fries 18 min"],
+["Hummus & Pita","Hummus 70g, whole wheat pita 1, carrot sticks 60g, cucumber 40g",280,10,36,12,"No cook","Toast pita if desired"]],
+
+[["Yogurt & Honey Toast","Greek yogurt 180g, whole grain toast 2, honey 15g, banana 1",440,24,64,8,"No cook","Toast bread; top with yogurt"],
+["Egg Drop Soup & Rice","Eggs 3, chicken broth 400ml, corn 50g, spring onion, ginger, rice 70g, side bread 1",420,24,52,12,"Stovetop","Boil broth; swirl in beaten eggs; 5 min total"],
+["Simple Pasta & Tomato Sauce","Whole wheat pasta 90g, tomato passata 150ml, garlic, basil, olive oil 10ml, parmesan 15g, side salad",490,18,68,14,"Boil + pan","Pasta 10 min; quick sauce 5 min"],
+["Banana & PB","Banana 1, peanut butter 15g",200,5,32,7,"No cook","Peel and eat"]]
+],
+"Week 4":[
+[["Cheese & Veggie Omelette","Eggs 3, cheddar 30g, mushrooms 60g, tomato 50g, spinach 40g, whole grain toast 2",510,36,28,30,"Pan","Cook omelette on med heat; fold and serve"],
+["Teriyaki Salmon Bowl","Salmon 180g, sushi rice 90g, edamame 60g, avocado 1/4, cucumber 60g, teriyaki 20ml, sesame",640,44,64,22,"Pan/airfryer","Pan-sear salmon 3 min/side; assemble bowl"],
+["Chicken & Mushroom Risotto","Chicken breast 180g, arborio rice 90g, mushrooms 120g, chicken broth 300ml, parmesan 20g, onion, garlic, white wine",640,48,64,16,"Pan (risotto)","Stir gradually; 20 min process; worth it"],
+["Greek Yogurt & Honey","Greek yogurt 200g, honey 10g, walnuts 15g, berries 50g",270,24,28,10,"No cook","Quick jar"]],
+
+[["Banana Protein Pancakes","Banana 1, eggs 2, oat flour 40g, whey protein 25g, baking powder, berries 80g, maple syrup 10ml",480,34,52,14,"Pan","Mash banana; mix all; cook 2 min/side"],
+["Chicken Souvlaki Plate","Chicken breast 200g, pita 1, tzatziki 60g, tomato 60g, red onion, lettuce, rice 60g",590,50,48,18,"Grill","Marinate in lemon oregano garlic overnight"],
+["Pressure Cooker Chili Con Carne","Lean ground beef 170g, kidney beans 100g, black beans 70g, tomato 150ml, corn 40g, cumin, paprika, rice 70g",680,48,70,18,"Cook4Me","Pressure cook 15 min; batch cook for 2 meals"],
+["Cottage Cheese & Crackers","Cottage cheese 180g, whole grain crackers 5, cherry tomatoes 60g",250,24,22,8,"No cook","Portion ahead"]],
+
+[["Overnight Chia Pudding","Chia seeds 35g, milk 300ml, whey protein 25g, mango 100g, coconut flakes 15g, honey 10g",500,34,46,22,"No cook","Mix night before; top with mango morning of"],
+["Turkey Club Sandwich","Turkey breast 140g, whole grain bread 2, bacon 2 slices, lettuce, tomato, avocado 1/4, mustard, side fruit",560,44,42,24,"Pan (bacon)","Pan fry bacon; assemble layered sandwich"],
+["Thai Green Curry Chicken","Chicken thigh 200g, green curry paste 25g, coconut milk 100ml, bamboo shoots 50g, green beans 80g, basil, jasmine rice 80g",680,44,58,28,"Cook4Me","Pressure cook 12 min; aromatic and fast"],
+["Protein Shake","Whey protein 35g, milk 300ml, peanut butter 10g, oats 15g",310,38,24,10,"Blender","Blend 30 sec"]],
+
+[["Egg & Cheese Muffin","English muffin 1, eggs 2 fried, cheese 30g, turkey ham 40g, spinach 20g, side fruit 80g",460,30,36,22,"Pan","Toast muffin; fry eggs; assemble"],
+["Grilled Chicken & Tabbouleh","Chicken breast 200g, bulgur 70g, parsley 30g, tomato 80g, cucumber 60g, lemon, olive oil 10ml, mint",590,48,52,18,"Grill + boil","Bulgur 12 min; mix salad; grill chicken"],
+["Seared Duck Breast & Orange Glaze","Duck breast 180g skin on, orange juice 40ml, honey 10g, sweet potato mash 200g, green beans 100g",680,42,58,28,"Pan","Score skin; sear skin-side 6 min; flip 3 min; make glaze"],
+["Skyr & Berries","Skyr 200g, mixed berries 100g, granola 10g",220,26,24,3,"No cook","Mix and eat"]],
+
+[["Loaded Veggie Scramble","Eggs 3, sweet potato 100g diced, bell pepper 60g, onion 30g, cheese 25g, hot sauce, toast 1",510,30,34,28,"Pan","Saute sweet potato 5 min first; add eggs"],
+["Miso Glazed Cod & Noodles","Cod 200g, miso paste 20g, honey 5g, udon noodles 90g, bok choy 80g, spring onion, sesame, edamame 40g",570,46,60,14,"Airfryer + boil","Glaze cod; airfry 12 min; boil noodles 3 min"],
+["Ribeye Steak & Chimichurri","Ribeye 190g, chimichurri (parsley garlic olive oil 10ml vinegar), roasted potatoes 180g, salad 60g",690,46,44,36,"Grill + airfryer","Grill steak 4 min/side; make chimichurri fresh"],
+["Hard Boiled Eggs & Fruit","Eggs 2, apple 1, handful almonds 15g",240,16,22,12,"Boil","Batch boil for week"]],
+
+[["Breakfast Hash","Turkey sausage 100g, potatoes 140g, bell pepper 60g, onion 40g, eggs 2 fried on top, paprika, toast 1",530,34,44,26,"Pan","Dice and fry potatoes first 8 min; add rest"],
+["Lemon Garlic Shrimp Pasta","Shrimp 170g, whole wheat pasta 90g, garlic 3 cloves, cherry tomatoes 80g, spinach 60g, olive oil 10ml, lemon, chili, parmesan 10g",590,42,64,18,"Pan + boil","Pasta 10 min; saute shrimp 3 min; toss together"],
+["Roast Chicken Dinner","Chicken thigh 2 200g, roast potatoes 180g, carrots 80g, broccoli 100g, gravy 30ml, olive oil 10ml",680,48,52,28,"Airfryer","Full roast; potatoes 20 min; chicken 22 min"],
+["Protein Pudding","Casein protein 35g, milk 200ml, vanilla, berries 50g",240,32,20,4,"No cook","Mix thick in bowl"]],
+
+[["Cinnamon French Toast","Whole grain bread 2, egg 1, milk 60ml, cinnamon, honey 15g, banana 1, Greek yogurt 60g",430,20,60,12,"Pan","Quick dip and fry; simple Sunday morning"],
+["Minestrone Soup","Cannellini beans 100g, pasta 50g, carrots 50g, celery 40g, tomato passata 200ml, spinach 40g, herbs, bread 1 slice",440,18,64,8,"Cook4Me","10 min pressure; warm and gentle"],
+["Chicken Quesadilla","Chicken breast 140g leftover, tortilla 1 large, cheese 35g, bell pepper 40g, salsa 30g, sour cream 20g",500,38,38,20,"Pan","Crisp both sides 3 min each; use leftovers"],
+["Apple & Almond Butter","Apple 1, almond butter 20g, rice cake 1",240,5,34,10,"No cook","Slice and dip"]]
+]
+};
+
+const groceries={
+"Week 1":{
+"Proteins":[["Chicken breast","~1kg"],["Chicken thighs","400g"],["Lean beef strips","180g"],["Lean ground beef","160g"],["Ground turkey","180g"],["Pork loin","200g"],["Salmon fillet","200g"],["Shrimp","180g"],["Tuna canned","280g"],["Eggs","20"],["Greek yogurt","700g"],["Cottage cheese","400g"],["Skyr","200g"],["Whey protein","100g"],["Feta cheese","100g"]],
+"Grains & Carbs":[["Basmati rice","600g"],["Egg noodles","170g"],["Whole grain bread","1 loaf"],["Whole wheat tortillas","3"],["Couscous","80g"],["Bulgur wheat","80g"],["Quinoa","80g"],["Oats","250g"],["Rice cakes","10"],["Oat flour","90g"],["Granola","40g"]],
+"Vegetables":[["Broccoli","270g"],["Bell peppers","5"],["Zucchini","180g"],["Spinach","240g"],["Cherry tomatoes","300g"],["Tomatoes","240g"],["Cucumber","240g"],["Carrots","300g"],["Green beans","120g"],["Brussels sprouts","100g"],["Sweet potato","250g"],["Potatoes","650g"],["Corn on cob","1"],["Cabbage","160g"],["Red onion","3"],["Onion","4"],["Garlic","1 head"],["Celery","40g"],["Lettuce","1 head"]],
+"Fruits":[["Bananas","7"],["Mixed berries","300g"],["Blueberries","80g"],["Apple","3"],["Avocado","1"],["Lemon","4"]],
+"Pantry":[["Olive oil","1 bottle"],["Soy sauce","1 bottle"],["Sesame oil","small"],["Honey","1 jar"],["Peanut butter","1 jar"],["Almond butter","small"],["Hummus","70g"],["Tahini","small"],["BBQ sauce","small"],["Coconut milk","1 can"],["Tomato passata","700ml"],["Curry powder","1 jar"],["Chickpeas canned","1 can"],["Kidney beans canned","1 can"],["Chicken broth","400ml"],["Walnuts","60g"],["Almonds","40g"],["Chia seeds","15g"],["Maple syrup","small"],["Protein bar","1"]]
+},
+"Week 2":{
+"Proteins":[["Chicken breast","980g"],["Chicken thighs","200g"],["Chicken drumsticks","220g"],["Lean ground beef","170g"],["Ground lamb","170g"],["Sirloin steak","200g"],["Beef chuck","180g"],["Cod fillet","200g"],["Tuna sushi grade or canned","170g"],["Smoked salmon","115g"],["Turkey bacon","3 slices"],["Eggs","18"],["Greek yogurt","600g"],["Cottage cheese","180g"],["Skyr","200g"],["Whey protein","125g"],["Feta cheese","25g"],["Mozzarella","35g"],["Parmesan","35g"],["Cream cheese","50g"],["Cheese slices","45g"]],
+"Grains & Carbs":[["Basmati/jasmine rice","450g"],["Sushi rice","90g"],["Whole wheat pasta","200g"],["Whole grain bread","1 loaf"],["Whole wheat tortillas","5"],["Whole wheat bagel","1"],["Couscous","80g"],["Oats","200g"],["Granola","40g"],["Panko breadcrumbs","25g"],["Rice cakes","3"]],
+"Vegetables":[["Romaine lettuce","120g"],["Lettuce","1 head"],["Spinach","60g"],["Asparagus","120g"],["Bell peppers","4"],["Cherry tomatoes","160g"],["Tomato","200g"],["Baby potatoes","200g"],["Sweet potato","220g"],["Potatoes","300g"],["Onion","5"],["Red onion","2"],["Garlic","1 head"],["Carrots","40g"],["Broccoli","120g"],["Zucchini","100g"],["Mushrooms","80g"],["Cabbage","80g"],["Corn","50g"],["Edamame","60g"],["Cucumber","160g"]],
+"Fruits":[["Bananas","5"],["Mixed berries","300g"],["Frozen berries","120g"],["Apple","1"],["Avocado","1.5"],["Pineapple","100g"],["Lemon","3"],["Lime","3"]],
+"Pantry":[["Tomato passata","600ml"],["Marinara sauce","60ml"],["Sour cream","50g"],["Hoisin sauce","10ml"],["Sriracha","small"],["Capers","small jar"],["Dill fresh","1 bunch"],["Italian herbs","1 jar"],["Cocoa powder","small"],["Walnuts","25g"],["Chia seeds","10g"],["Black beans canned","2 cans"],["Chicken broth","700ml"],["Beef broth","300ml"],["Salsa","small jar"],["Pine nuts","10g"],["Coconut flakes","15g"]]
+},
+"Week 3":{
+"Proteins":[["Chicken breast","960g"],["Chicken thighs","200g"],["Lean ground beef","350g"],["Pork shoulder","180g"],["Pork chop","200g"],["Lamb chops","190g"],["White fish fillet","200g"],["Shrimp","180g"],["Eggs","18"],["Greek yogurt","640g"],["Cottage cheese","180g"],["Skyr","200g"],["Whey protein","100g"],["Casein protein","35g"],["Feta cheese","75g"],["Cheese","40g"]],
+"Grains & Carbs":[["Jasmine rice","500g"],["Rice noodles","80g"],["Whole grain bread","1.5 loaves"],["Whole wheat tortillas","2"],["Whole grain bun","2"],["Bulgur wheat","70g"],["Couscous","80g"],["Oats","180g"],["Oat flour","60g"],["Granola","50g"],["Pita bread","1"],["Whole grain crackers","12"],["Polenta/grits","70g"]],
+"Vegetables":[["Spinach","220g"],["Bell peppers","5"],["Mushrooms","50g"],["Cherry tomatoes","160g"],["Tomato","260g"],["Zucchini","200g"],["Potatoes","760g"],["Sweet potato","360g"],["Carrots","190g"],["Green beans","80g"],["Bok choy","80g"],["Bean sprouts","60g"],["Cabbage","160g"],["Onion","6"],["Red onion","1"],["Garlic","1 head"],["Ginger","small piece"],["Lettuce cups","4"],["Water chestnuts","40g"],["Corn","50g"],["Peas","100g"],["Edamame","60g"],["Cucumber","100g"]],
+"Fruits":[["Bananas","6"],["Mixed berries","340g"],["Mango","160g"],["Apple","2"],["Lemon","3"],["Lime","3"]],
+"Pantry":[["BBQ sauce","small"],["Teriyaki sauce","25ml"],["Hoisin sauce","15ml"],["Tomato passata","700ml"],["Coconut flakes","10g"],["Hummus","70g"],["Chicken broth","800ml"],["Red lentils","70g"],["Black beans","70g"],["Walnuts","20g"],["Almonds","20g"],["Flax seeds","10g"],["Chia seeds","10g"],["Balsamic vinegar","small"],["Fresh herbs assorted","bunch"],["Protein bar","1"]]
+},
+"Week 4":{
+"Proteins":[["Chicken breast","920g"],["Chicken thighs","400g"],["Lean ground beef","170g"],["Duck breast","180g"],["Ribeye steak","190g"],["Salmon fillet","180g"],["Cod fillet","200g"],["Shrimp","170g"],["Turkey sausage","100g"],["Turkey ham","40g"],["Eggs","20"],["Greek yogurt","460g"],["Cottage cheese","180g"],["Skyr","200g"],["Whey protein","120g"],["Casein protein","35g"],["Cheddar cheese","30g"],["Cheese assorted","90g"],["Parmesan","30g"]],
+"Grains & Carbs":[["Arborio rice","90g"],["Jasmine rice","400g"],["Sushi rice","90g"],["Udon noodles","90g"],["Whole wheat pasta","140g"],["Whole grain bread","1.5 loaves"],["English muffin","1"],["Whole wheat tortilla","2"],["Whole grain bun","1"],["Oats","65g"],["Oat flour","40g"],["Bulgur wheat","70g"],["Pita bread","1"],["Whole grain crackers","5"],["Granola","10g"],["Rice cakes","1"]],
+"Vegetables":[["Spinach","200g"],["Mushrooms","180g"],["Bell peppers","5"],["Cherry tomatoes","220g"],["Tomato","250g"],["Potatoes","680g"],["Sweet potato","300g"],["Broccoli","100g"],["Carrots","130g"],["Green beans","180g"],["Bok choy","80g"],["Edamame","100g"],["Cucumber","180g"],["Onion","6"],["Red onion","1"],["Garlic","2 heads"],["Ginger","small"],["Bamboo shoots","50g"],["Celery","40g"],["Corn","40g"],["Cannellini beans","100g"]],
+"Fruits":[["Bananas","6"],["Mixed berries","280g"],["Mango","100g"],["Apple","3"],["Orange","1"],["Lemon","3"],["Lime","2"]],
+"Pantry":[["Teriyaki sauce","20ml"],["Miso paste","20g"],["Green curry paste","25g"],["Coconut milk","1 can"],["Tomato passata","600ml"],["Chicken broth","300ml"],["Salsa","small jar"],["Hot sauce","small"],["Red wine vinegar","small"],["White wine cooking","splash"],["Almond butter","20g"],["Walnuts","15g"],["Coconut flakes","15g"],["Chia seeds","35g"],["Cajun seasoning","small"],["Fresh herbs assorted","bunch"],["Kidney beans","100g"],["Black beans","70g"]]
+}
+};
+
+const mealPrep={
+"Week 1":["Batch cook 500g basmati rice - store in 3 containers for Mon/Sat/Sun","Grill 400g chicken breast - use for Mon lunch + Thu shawarma","Make 6 egg & veggie muffins in airfryer - reheat for Thu breakfast","Boil 4 eggs for snacks through the week","Prep veggie sticks (carrots, cucumber, peppers) in water-filled containers","Make turkey meatball mix 180g - shape and refrigerate for Tue","Marinate Thu chicken in shawarma spices (cumin, paprika, turmeric, yogurt)","Wash and dry all leafy greens; store with paper towel in bags","Prep 2 overnight oats jars for Mon + Wed","Make tuna salad base for Wed (tuna + yogurt + mustard)"],
+"Week 2":["Batch cook 400g rice - store for Mon/Thu/Fri bowls","Make bolognese sauce big batch - use Mon dinner + freeze extra","Prep breakfast burrito filling (beans, salsa portions) for quick Tue assembly","Boil 6 eggs for Wed salad and general snacking","Shape lamb kofta 170g - refrigerate for Wed dinner","Prep overnight chocolate oats jar for Wed","Slice all veggies for fajitas (Tue) - store in ziplock","Make caesar dressing base (yogurt, lemon, garlic, anchovy paste)","Portion cottage cheese + pineapple containers for Tue snack","Pressure cook pulled chicken 200g thigh - shred and store for Sat tacos"],
+"Week 3":["Batch cook 450g rice - store for Mon/Tue/Thu","Make protein pudding base (casein + milk + cocoa) for Mon snack","Prep lettuce cups and Asian beef ingredients (wash, slice, measure)","Pressure cook pulled pork 180g shoulder - shred for Wed dinner","Boil 6 eggs for Thu snack + general use through week","Prep chicken & lentils ingredients (measure lentils, dice onion, garlic)","Make pho broth base in Cook4Me - store for Sat","Prep overnight PB oats for Wed breakfast","Wash and prep all salad veggies; make tabbouleh parsley mix","Cut sweet potato fries and par-cook for Sat BBQ night"],
+"Week 4":["Batch cook 400g rice - store for Mon/Tue/Wed","Marinate chicken souvlaki 200g (lemon-oregano-garlic) overnight for Tue","Make overnight chia pudding for Wed breakfast","Pressure cook chili con carne big batch - Tue dinner + freeze portion","Boil 6 eggs for Fri snack + general use","Prep chimichurri sauce fresh for Fri (parsley, garlic, oil, vinegar)","Portion Thai curry paste and coconut milk for Wed","Slice all veggies for the week; store in labeled containers","Portion Greek yogurt + honey jars for Mon snack","Prep minestrone soup veggies (dice carrots, celery, onion) for Sun"]
+};
+
+let currentWeek="Week 1", currentDay="All", currentView="meals";
+const weekKeys=Object.keys(weeks);
+
+function calcDayTotals(dayMeals){
+  let t={kcal:0,p:0,c:0,f:0};
+  dayMeals.forEach(m=>{t.kcal+=m[2];t.p+=m[3];t.c+=m[4];t.f+=m[5]});
+  return t;
+}
+
+function calcWeekAvg(wk){
+  let days=weeks[wk];
+  let totals=days.map(d=>calcDayTotals(d));
+  let n=totals.length;
+  return {
+    kcal:Math.round(totals.reduce((s,t)=>s+t.kcal,0)/n),
+    p:Math.round(totals.reduce((s,t)=>s+t.p,0)/n),
+    c:Math.round(totals.reduce((s,t)=>s+t.c,0)/n),
+    f:Math.round(totals.reduce((s,t)=>s+t.f,0)/n)
+  };
+}
+
+function renderStats(){
+  let a=calcWeekAvg(currentWeek);
+  document.getElementById("weekStats").innerHTML=`
+    <div class="stat"><div class="val">${a.kcal}</div><div class="label">Avg Daily Kcal</div></div>
+    <div class="stat"><div class="val prot">${a.p}g</div><div class="label">Avg Protein</div></div>
+    <div class="stat"><div class="val carb">${a.c}g</div><div class="label">Avg Carbs</div></div>
+    <div class="stat"><div class="val fat">${a.f}g</div><div class="label">Avg Fat</div></div>
+  `;
+}
+
+function renderWeekTabs(){
+  document.getElementById("weekTabs").innerHTML=weekKeys.map(w=>
+    `<div class="tab ${w===currentWeek?'active':''}" onclick="selectWeek('${w}')">${w}</div>`
+  ).join("");
+}
+
+function renderDayTabs(){
+  if(currentView!=="meals"){document.getElementById("dayTabs").innerHTML="";return;}
+  let html=`<div class="sub-tab ${currentDay==='All'?'active':''}" onclick="selectDay('All')">All Days</div>`;
+  DAYS.forEach(d=>{
+    let cls=d==="Sunday"?"sunday":"";
+    html+=`<div class="sub-tab ${cls} ${currentDay===d?'active':''}" onclick="selectDay('${d}')">${d}</div>`;
+  });
+  document.getElementById("dayTabs").innerHTML=html;
+}
+
+function renderMeals(){
+  let wkData=weeks[currentWeek];
+  let html="";
+  wkData.forEach((dayMeals,di)=>{
+    let day=DAYS[di];
+    if(currentDay!=="All"&&currentDay!==day)return;
+    let t=calcDayTotals(dayMeals);
+    let isSun=day==="Sunday";
+    html+=`<div class="day-card ${isSun?'sunday':''}">`;
+    html+=`<div class="day-header ${isSun?'sun':''}">${day}${isSun?'<span class="easy-badge">Easy Day</span>':''}
+      <div class="day-totals">
+        <span><b>${t.kcal}</b> kcal</span>
+        <span style="color:var(--blue)"><b>${t.p}g</b> protein</span>
+        <span style="color:var(--green3)"><b>${t.c}g</b> carbs</span>
+        <span style="color:var(--orange)"><b>${t.f}g</b> fat</span>
+      </div></div>`;
+    dayMeals.forEach((m,mi)=>{
+      html+=`<div class="meal-row">
+        <div class="meal-label">${MEALS[mi]}</div>
+        <div class="meal-content">
+          <div class="meal-name">${m[0]}</div>
+          <div class="meal-ingredients">${m[1]}</div>
+          <div class="meal-meta">
+            <span class="tag cook">${m[6]}</span>
+          </div>
+          <div class="prep-note">${m[7]}</div>
+        </div>
+        <div class="meal-macros">
+          <div class="macro-row"><span>Kcal</span><span class="k">${m[2]}</span></div>
+          <div class="macro-row"><span>Protein</span><span class="p">${m[3]}g</span></div>
+          <div class="macro-row"><span>Carbs</span><span class="c">${m[4]}g</span></div>
+          <div class="macro-row"><span>Fat</span><span class="f">${m[5]}g</span></div>
+        </div>
+      </div>`;
+    });
+    html+=`</div>`;
+  });
+  document.getElementById("content").innerHTML=html;
+}
+
+function renderGrocery(){
+  let g=groceries[currentWeek];
+  let html="";
+  let wkKey=currentWeek.replace(" ","");
+  Object.entries(g).forEach(([cat,items])=>{
+    html+=`<div class="grocery-section"><h3>${cat}</h3>`;
+    items.forEach(([name,qty],i)=>{
+      let id=`${wkKey}_${cat}_${i}`;
+      let checked=localStorage.getItem(id)==="1";
+      html+=`<div class="grocery-item ${checked?'checked':''}" id="gi_${id}">
+        <input type="checkbox" ${checked?'checked':''} onchange="toggleGrocery('${id}',this)">
+        <span class="name">${name}</span>
+        <span class="qty">${qty}</span>
+      </div>`;
+    });
+    html+=`</div>`;
+  });
+  document.getElementById("content").innerHTML=html;
+}
+
+function renderPrep(){
+  let steps=mealPrep[currentWeek];
+  let wkKey=currentWeek.replace(" ","");
+  let html=`<div class="prep-section"><h3>Sunday Meal Prep - ${currentWeek}</h3>
+    <div class="subtitle">Do these Sunday afternoon to set up your week (~90 min total)</div>`;
+  steps.forEach((s,i)=>{
+    let id=`prep_${wkKey}_${i}`;
+    let checked=localStorage.getItem(id)==="1";
+    html+=`<div class="prep-step ${checked?'checked':''}" id="ps_${id}">
+      <div class="num">${i+1}</div>
+      <input type="checkbox" ${checked?'checked':''} onchange="togglePrep('${id}',this)">
+      <span>${s}</span>
+    </div>`;
+  });
+  html+=`</div>`;
+  document.getElementById("content").innerHTML=html;
+}
+
+function toggleGrocery(id,el){
+  localStorage.setItem(id,el.checked?"1":"0");
+  document.getElementById("gi_"+id).classList.toggle("checked",el.checked);
+}
+function togglePrep(id,el){
+  localStorage.setItem(id,el.checked?"1":"0");
+  document.getElementById("ps_"+id).classList.toggle("checked",el.checked);
+}
+
+function selectWeek(w){currentWeek=w;renderAll();}
+function selectDay(d){currentDay=d;renderDayTabs();renderContent();}
+function setView(v){
+  currentView=v;
+  document.querySelectorAll(".vt-btn").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".vt-btn").forEach(b=>{if(b.textContent.toLowerCase().includes(v))b.classList.add("active")});
+  renderDayTabs();renderContent();
+}
+function renderContent(){
+  if(currentView==="meals")renderMeals();
+  else if(currentView==="grocery")renderGrocery();
+  else renderPrep();
+}
+function renderAll(){renderStats();renderWeekTabs();renderDayTabs();renderContent();}
+renderAll();
+</script>
+</body>
+</html>
