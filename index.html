@@ -1,0 +1,2635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workout Library</title>
+<style>
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface2: #252525;
+    --accent: #e85d04;
+    --accent2: #f48c06;
+    --text: #e8e8e8;
+    --text-dim: #999;
+    --green: #52b788;
+    --blue: #4895ef;
+    --purple: #b185db;
+    --red: #ef476f;
+    --border: #333;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+  header {
+    text-align: center;
+    padding: 40px 20px 20px;
+  }
+
+  header h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
+  }
+
+  header p { color: var(--text-dim); font-size: 0.95rem; }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin: 24px 0 20px;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab {
+    padding: 10px 22px;
+    border: none;
+    background: none;
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Filters */
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+
+  .filter-group {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .filter-group label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    width: 100%;
+    margin-bottom: 2px;
+  }
+
+  .filter-btn {
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+    border-radius: 20px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+  .filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .search-box {
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    border-radius: 20px;
+    font-size: 0.88rem;
+    width: 220px;
+    outline: none;
+  }
+
+  .search-box:focus { border-color: var(--accent); }
+
+  /* Exercise grid */
+  .exercise-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 14px;
+  }
+
+  .exercise-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    transition: all 0.2s;
+    cursor: default;
+  }
+
+  .exercise-card:hover { border-color: var(--accent); transform: translateY(-1px); }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+
+  .card-header h3 { font-size: 1rem; font-weight: 700; }
+
+  .difficulty {
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .diff-beginner { background: #52b78822; color: var(--green); }
+  .diff-intermediate { background: #4895ef22; color: var(--blue); }
+  .diff-advanced { background: #b185db22; color: var(--purple); }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 8px;
+  }
+
+  .tag {
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    background: var(--surface2);
+    border-radius: 8px;
+    color: var(--text-dim);
+  }
+
+  .tag-equip { color: var(--accent2); background: #f48c0615; }
+  .tag-muscle { color: var(--blue); background: #4895ef12; }
+  .tag-type { color: var(--green); background: #52b78812; }
+
+  .card-desc {
+    font-size: 0.84rem;
+    color: var(--text-dim);
+    line-height: 1.45;
+  }
+
+  .card-sets {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    font-size: 0.82rem;
+    color: var(--text-dim);
+  }
+
+  .card-sets strong { color: var(--text); }
+
+  .yt-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    padding: 4px 10px;
+    background: #ff000018;
+    border: 1px solid #ff000033;
+    border-radius: 6px;
+    color: #ff4444;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+
+  .yt-link:hover { background: #ff000028; border-color: #ff000066; color: #ff6666; }
+
+  .yt-link svg { width: 14px; height: 14px; fill: currentColor; flex-shrink: 0; }
+
+  .no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-dim);
+    font-size: 1rem;
+  }
+
+  /* Weekly templates */
+  .week-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+  }
+
+  .day-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .day-header {
+    padding: 12px 18px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .day-header .day-type {
+    font-size: 0.72rem;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .type-upper { background: #e85d0422; color: var(--accent); }
+  .type-lower { background: #4895ef22; color: var(--blue); }
+  .type-mobility { background: #52b78822; color: var(--green); }
+  .type-cardio { background: #ef476f22; color: var(--red); }
+  .type-rest { background: var(--surface2); color: var(--text-dim); }
+
+  .day-body { padding: 0 18px 16px; }
+
+  .day-exercise {
+    padding: 6px 0;
+    font-size: 0.85rem;
+    border-bottom: 1px solid #ffffff08;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .day-exercise:last-child { border-bottom: none; }
+  .day-exercise .ex-name { color: var(--text); }
+  .day-exercise .ex-sets { color: var(--text-dim); font-size: 0.8rem; }
+
+  .template-section {
+    margin-bottom: 36px;
+  }
+
+  .template-section h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .template-section p {
+    color: var(--text-dim);
+    font-size: 0.88rem;
+    margin-bottom: 16px;
+  }
+
+  .stat-bar {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 20px;
+    text-align: center;
+    min-width: 100px;
+  }
+
+  .stat-num { font-size: 1.6rem; font-weight: 800; color: var(--accent); }
+  .stat-label { font-size: 0.72rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em; }
+
+  /* Complex cards */
+  .complex-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 14px;
+  }
+
+  .complex-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.2s;
+  }
+
+  .complex-card:hover { border-color: var(--accent); }
+
+  .complex-header {
+    padding: 16px 18px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .complex-header h3 { font-size: 1.05rem; font-weight: 700; }
+
+  .complex-meta {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 0 18px 10px;
+  }
+
+  .complex-desc {
+    padding: 0 18px 12px;
+    font-size: 0.84rem;
+    color: var(--text-dim);
+    line-height: 1.45;
+  }
+
+  .complex-steps {
+    padding: 0 18px 16px;
+  }
+
+  .complex-step {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 5px 0;
+    font-size: 0.85rem;
+    border-bottom: 1px solid #ffffff08;
+  }
+
+  .complex-step:last-child { border-bottom: none; }
+
+  .step-num {
+    min-width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .step-text { color: var(--text); }
+  .step-reps { color: var(--text-dim); font-size: 0.8rem; margin-left: auto; white-space: nowrap; }
+
+  .complex-footer {
+    padding: 10px 18px;
+    border-top: 1px solid var(--border);
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .complex-footer strong { color: var(--text); }
+
+  .complex-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+
+  /* Generator */
+  .gen-controls {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+
+  .gen-controls h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .gen-controls > p {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    margin-bottom: 18px;
+  }
+
+  .gen-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 16px;
+    align-items: flex-end;
+  }
+
+  .gen-field label {
+    display: block;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    margin-bottom: 5px;
+  }
+
+  .gen-field select, .gen-field input[type="number"] {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    border-radius: 8px;
+    font-size: 0.88rem;
+    outline: none;
+    min-width: 140px;
+  }
+
+  .gen-field select:focus, .gen-field input:focus { border-color: var(--accent); }
+
+  .gen-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .gen-checkboxes label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    cursor: pointer;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .gen-checkboxes input[type="checkbox"] {
+    accent-color: var(--accent);
+    width: 16px;
+    height: 16px;
+  }
+
+  .gen-btn {
+    padding: 10px 28px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .gen-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px #e85d0444; }
+  .gen-btn:active { transform: translateY(0); }
+
+  .gen-btn-secondary {
+    padding: 10px 28px;
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .gen-btn-secondary:hover { border-color: var(--accent); }
+
+  .gen-output {
+    min-height: 100px;
+  }
+
+  .gen-note {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  @media (max-width: 600px) {
+    .container { padding: 12px; }
+
+    header { padding: 24px 12px 12px; }
+    header h1 { font-size: 1.6rem; }
+
+    .tabs { gap: 0; margin: 16px 0 14px; }
+    .tab { padding: 8px 14px; font-size: 0.82rem; }
+
+    .exercise-grid, .week-grid, .complex-grid { grid-template-columns: 1fr; }
+
+    .filters, .complex-filters { flex-direction: column; align-items: stretch; }
+    .search-box { width: 100%; }
+
+    .filter-group { flex-wrap: wrap; gap: 5px; }
+    .filter-btn { padding: 5px 10px; font-size: 0.76rem; }
+
+    .exercise-card { padding: 14px; }
+    .card-header h3 { font-size: 0.92rem; }
+    .difficulty { font-size: 0.65rem; padding: 2px 8px; }
+    .card-tags { gap: 4px; }
+    .tag { font-size: 0.68rem; padding: 2px 6px; }
+
+    .gen-row { flex-direction: column; }
+    .gen-controls { padding: 16px; }
+    .gen-field select, .gen-field input[type="number"] { min-width: 100%; }
+    .gen-btn, .gen-btn-secondary { width: 100%; text-align: center; }
+
+    .day-header { font-size: 0.88rem; flex-wrap: wrap; gap: 6px; }
+    .day-exercise { font-size: 0.82rem; }
+
+    .stat-bar { gap: 8px; }
+    .stat { padding: 8px 12px; min-width: 70px; }
+    .stat-num { font-size: 1.2rem; }
+
+    .complex-card { }
+    .complex-header h3 { font-size: 0.95rem; }
+    .complex-step { font-size: 0.82rem; }
+    .complex-footer { font-size: 0.78rem; flex-direction: column; gap: 4px; }
+
+    .yt-link { font-size: 0.7rem; padding: 3px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<noscript>
+  <div style="background:#e85d04;color:#fff;padding:20px;text-align:center;font-size:1.1rem;font-family:system-ui,sans-serif;">
+    This page requires JavaScript to work. Please open this file in <strong>Safari</strong> (not the Files app).<br>
+    Tap the share icon <strong>&#x2197;</strong> → "Open in Safari"
+  </div>
+</noscript>
+
+<div id="jsFailMsg" style="display:none;background:#e85d04;color:#fff;padding:20px;text-align:center;font-size:1.1rem;font-family:system-ui,sans-serif;">
+  Loading failed. Please open this file in <strong>Safari</strong>.<br>
+  In the Files app: tap Share &#x2197; → "Open in Safari"
+</div>
+
+<header>
+  <h1>Workout Library</h1>
+  <p>Kettlebells &middot; Rings &middot; Bands &middot; Pull-Up Bar</p>
+</header>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab active" data-tab="exercises">Exercise Library</button>
+    <button class="tab" data-tab="complexes">Complexes & Flows</button>
+    <button class="tab" data-tab="templates">Weekly Templates</button>
+    <button class="tab" data-tab="warmup">Warm-Up / Cool-Down</button>
+    <button class="tab" data-tab="generator">Generator</button>
+  </div>
+
+  <!-- ===== EXERCISE LIBRARY TAB ===== -->
+  <div class="tab-content active" id="exercises">
+    <div class="filters">
+      <input type="text" class="search-box" placeholder="Search exercises..." id="searchBox">
+
+      <div class="filter-group">
+        <label>Equipment</label>
+        <button class="filter-btn active" data-filter="equip" data-value="all">All</button>
+        <button class="filter-btn" data-filter="equip" data-value="kettlebell">Kettlebell</button>
+        <button class="filter-btn" data-filter="equip" data-value="rings">Rings</button>
+        <button class="filter-btn" data-filter="equip" data-value="band">Band</button>
+        <button class="filter-btn" data-filter="equip" data-value="pullup bar">Pull-Up Bar</button>
+        <button class="filter-btn" data-filter="equip" data-value="bodyweight">Bodyweight</button>
+      </div>
+
+      <div class="filter-group">
+        <label>Focus</label>
+        <button class="filter-btn active" data-filter="split" data-value="all">All</button>
+        <button class="filter-btn" data-filter="split" data-value="upper">Upper</button>
+        <button class="filter-btn" data-filter="split" data-value="lower">Lower</button>
+        <button class="filter-btn" data-filter="split" data-value="full">Full Body</button>
+        <button class="filter-btn" data-filter="split" data-value="core">Core</button>
+      </div>
+
+      <div class="filter-group">
+        <label>Type</label>
+        <button class="filter-btn active" data-filter="type" data-value="all">All</button>
+        <button class="filter-btn" data-filter="type" data-value="strength">Strength</button>
+        <button class="filter-btn" data-filter="type" data-value="power">Power</button>
+        <button class="filter-btn" data-filter="type" data-value="mobility">Mobility</button>
+        <button class="filter-btn" data-filter="type" data-value="cardio">Cardio</button>
+      </div>
+    </div>
+
+    <div class="exercise-grid" id="exerciseGrid"></div>
+    <div class="no-results" id="noResults" style="display:none;">No exercises match your filters.</div>
+
+    <div class="stat-bar" id="statBar" style="margin-top: 20px;"></div>
+  </div>
+
+  <!-- ===== COMPLEXES & FLOWS TAB ===== -->
+  <div class="tab-content" id="complexes">
+    <div class="complex-filters">
+      <input type="text" class="search-box" placeholder="Search complexes..." id="complexSearchBox">
+      <div class="filter-group">
+        <label>Equipment</label>
+        <button class="filter-btn cfilter active" data-cfilter="equip" data-value="all">All</button>
+        <button class="filter-btn cfilter" data-cfilter="equip" data-value="kettlebell">Kettlebell</button>
+        <button class="filter-btn cfilter" data-cfilter="equip" data-value="rings">Rings</button>
+        <button class="filter-btn cfilter" data-cfilter="equip" data-value="band">Band</button>
+        <button class="filter-btn cfilter" data-cfilter="equip" data-value="pullup bar">Pull-Up Bar</button>
+        <button class="filter-btn cfilter" data-cfilter="equip" data-value="mixed">Mixed</button>
+      </div>
+      <div class="filter-group">
+        <label>Goal</label>
+        <button class="filter-btn cfilter active" data-cfilter="goal" data-value="all">All</button>
+        <button class="filter-btn cfilter" data-cfilter="goal" data-value="strength">Strength</button>
+        <button class="filter-btn cfilter" data-cfilter="goal" data-value="conditioning">Conditioning</button>
+        <button class="filter-btn cfilter" data-cfilter="goal" data-value="power">Power</button>
+        <button class="filter-btn cfilter" data-cfilter="goal" data-value="mobility">Mobility</button>
+      </div>
+    </div>
+    <div class="complex-grid" id="complexGrid"></div>
+    <div class="no-results" id="noComplexResults" style="display:none;">No complexes match your filters.</div>
+  </div>
+
+  <!-- ===== WEEKLY TEMPLATES TAB ===== -->
+  <div class="tab-content" id="templates">
+    <div class="complex-filters" style="margin-bottom: 20px;">
+      <div class="filter-group">
+        <label>Vibe</label>
+        <button class="filter-btn tfilter active" data-tfilter="cat" data-value="all">All</button>
+        <button class="filter-btn tfilter" data-tfilter="cat" data-value="strength">Strength</button>
+        <button class="filter-btn tfilter" data-tfilter="cat" data-value="conditioning">Conditioning</button>
+        <button class="filter-btn tfilter" data-tfilter="cat" data-value="mixed">Mixed</button>
+        <button class="filter-btn tfilter" data-tfilter="cat" data-value="easy">Easy Week</button>
+      </div>
+    </div>
+    <div id="templateGrid"></div>
+  </div>
+
+  <!-- ===== WARM-UP / COOL-DOWN TAB ===== -->
+  <div class="tab-content" id="warmup">
+    <div class="complex-filters" style="margin-bottom: 20px;">
+      <div class="filter-group">
+        <label>Training Day</label>
+        <button class="filter-btn wfilter active" data-wfilter="day" data-value="upper">Upper Body</button>
+        <button class="filter-btn wfilter" data-wfilter="day" data-value="lower">Lower Body</button>
+        <button class="filter-btn wfilter" data-wfilter="day" data-value="full">Full Body</button>
+        <button class="filter-btn wfilter" data-wfilter="day" data-value="conditioning">Conditioning</button>
+        <button class="filter-btn wfilter" data-wfilter="day" data-value="rest">Recovery Day</button>
+      </div>
+    </div>
+    <div id="warmupOutput"></div>
+  </div>
+
+  <!-- ===== GENERATOR TAB ===== -->
+  <div class="tab-content" id="generator">
+    <div class="gen-controls">
+      <h2>Build Your Workout</h2>
+      <p>Set your rules, hit generate. Every workout is different. Re-roll as many times as you want.</p>
+
+      <div class="gen-row">
+        <div class="gen-field">
+          <label>Goal</label>
+          <select id="genGoal">
+            <option value="strength">Strength (low reps, long rest)</option>
+            <option value="hypertrophy">Hypertrophy (moderate reps)</option>
+            <option value="conditioning">Conditioning (high reps, short rest)</option>
+            <option value="power">Power (explosive)</option>
+            <option value="mobility">Mobility / Recovery</option>
+          </select>
+        </div>
+        <div class="gen-field">
+          <label>Split</label>
+          <select id="genSplit">
+            <option value="upper">Upper Body</option>
+            <option value="lower">Lower Body</option>
+            <option value="full">Full Body</option>
+            <option value="push-pull">Push / Pull</option>
+          </select>
+        </div>
+        <div class="gen-field">
+          <label>Exercises</label>
+          <input type="number" id="genCount" min="3" max="10" value="6">
+        </div>
+        <div class="gen-field">
+          <label>Time (min)</label>
+          <select id="genTime">
+            <option value="20">~20 min</option>
+            <option value="30" selected>~30 min</option>
+            <option value="45">~45 min</option>
+            <option value="60">~60 min</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="gen-row">
+        <div class="gen-field">
+          <label>Equipment (check what you have today)</label>
+          <div class="gen-checkboxes">
+            <label><input type="checkbox" value="kettlebell" checked class="gen-equip"> Kettlebell</label>
+            <label><input type="checkbox" value="rings" checked class="gen-equip"> Rings</label>
+            <label><input type="checkbox" value="band" checked class="gen-equip"> Bands</label>
+            <label><input type="checkbox" value="pullup bar" checked class="gen-equip"> Pull-Up Bar</label>
+            <label><input type="checkbox" value="bodyweight" checked class="gen-equip"> Bodyweight</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="gen-row" style="gap: 10px;">
+        <button class="gen-btn" id="generateBtn">Generate Workout</button>
+        <button class="gen-btn-secondary" id="generateWeekBtn">Generate Full Week</button>
+      </div>
+    </div>
+
+    <div class="gen-output" id="genOutput"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// EXERCISE DATABASE
+// ============================================================
+const exercises = [
+  // ── KETTLEBELL ──────────────────────────────────────────────
+  // Upper
+  { name: "KB Single-Arm Press", equip: ["kettlebell"], split: "upper", muscles: ["shoulders","triceps"], type: "strength", diff: "intermediate", desc: "Strict overhead press from rack position. Core braced, squeeze glute on pressing side.", sets: "4x5-6 each side" },
+  { name: "KB Push Press", equip: ["kettlebell"], split: "upper", muscles: ["shoulders","triceps"], type: "power", diff: "intermediate", desc: "Dip-and-drive to press overhead. Great for building power when strict press stalls.", sets: "4x6-8 each side" },
+  { name: "KB Floor Press", equip: ["kettlebell"], split: "upper", muscles: ["chest","triceps"], type: "strength", diff: "beginner", desc: "Lying press from floor. Eliminates shoulder stress at the bottom. Pause briefly on floor.", sets: "3x8-10 each side" },
+  { name: "KB Bottoms-Up Press", equip: ["kettlebell"], split: "upper", muscles: ["shoulders","grip","core"], type: "strength", diff: "advanced", desc: "Press with KB inverted — extreme grip and shoulder stabiliser demand.", sets: "3x5 each side" },
+  { name: "KB Halo", equip: ["kettlebell"], split: "upper", muscles: ["shoulders","core"], type: "mobility", diff: "beginner", desc: "Circle the KB around your head. Great warm-up for thoracic spine and shoulders.", sets: "2x8 each direction" },
+  { name: "KB Bent-Over Row", equip: ["kettlebell"], split: "upper", muscles: ["back","biceps"], type: "strength", diff: "beginner", desc: "Hinged position, pull KB to hip. Keep elbow close and squeeze at the top.", sets: "4x8-10 each side" },
+  { name: "KB Renegade Row", equip: ["kettlebell"], split: "upper", muscles: ["back","core"], type: "strength", diff: "advanced", desc: "Plank on two KBs, row one at a time. Anti-rotation core work plus back strength.", sets: "3x6-8 each side" },
+  { name: "KB Gorilla Row", equip: ["kettlebell"], split: "upper", muscles: ["back","biceps","core"], type: "strength", diff: "intermediate", desc: "Dual KB row from a sumo-deadlift stance. Alternating or simultaneous pulls.", sets: "4x8-10 each side" },
+  { name: "KB Arm Bar", equip: ["kettlebell"], split: "upper", muscles: ["shoulders","core"], type: "mobility", diff: "intermediate", desc: "Loaded shoulder opener from the floor. Excellent for shoulder stability and thoracic rotation.", sets: "2x30s each side" },
+  { name: "KB Windmill", equip: ["kettlebell"], split: "upper", muscles: ["shoulders","obliques","hamstrings"], type: "mobility", diff: "intermediate", desc: "Loaded side bend with overhead hold. Builds shoulder stability and hip flexibility together.", sets: "3x5 each side" },
+  { name: "KB Turkish Get-Up", equip: ["kettlebell"], split: "full", muscles: ["shoulders","core","hips"], type: "strength", diff: "advanced", desc: "Floor to standing with KB overhead. The ultimate full-body strength and stability exercise.", sets: "3x2-3 each side" },
+  { name: "KB Waiter Walk", equip: ["kettlebell"], split: "upper", muscles: ["shoulders","core"], type: "strength", diff: "intermediate", desc: "Walk with KB in bottoms-up waiter position overhead. Builds shoulder and core stability.", sets: "3x30-40m each side" },
+  { name: "KB Suitcase Carry", equip: ["kettlebell"], split: "upper", muscles: ["grip","obliques","core"], type: "strength", diff: "beginner", desc: "Walk with a heavy KB in one hand. Anti-lateral flexion core work.", sets: "3x40m each side" },
+
+  // Upper — additional
+  { name: "KB Double Press", equip: ["kettlebell"], split: "upper", muscles: ["shoulders","triceps","core"], type: "strength", diff: "intermediate", desc: "Press two KBs simultaneously from rack. Heavier total load and demands a braced trunk.", sets: "4x5-6" },
+  { name: "KB See-Saw Press", equip: ["kettlebell"], split: "upper", muscles: ["shoulders","triceps","core"], type: "strength", diff: "intermediate", desc: "Alternate pressing two KBs — as one goes up, the other lowers. Continuous tension on both shoulders.", sets: "3x6-8 each side" },
+  { name: "KB Z-Press", equip: ["kettlebell"], split: "upper", muscles: ["shoulders","triceps","core"], type: "strength", diff: "advanced", desc: "Seated on floor with legs extended, press from rack. Zero leg drive — pure pressing strength and core demand.", sets: "3x5-6 each side" },
+  { name: "KB Half-Kneeling Press", equip: ["kettlebell"], split: "upper", muscles: ["shoulders","core","glutes"], type: "strength", diff: "beginner", desc: "Press from a half-kneeling position. Eliminates compensation and forces core/glute engagement.", sets: "3x8 each side" },
+  { name: "KB Crush Curl", equip: ["kettlebell"], split: "upper", muscles: ["biceps","forearms"], type: "strength", diff: "beginner", desc: "Squeeze the bell body with both hands and curl. Isometric grip + bicep work.", sets: "3x10-12" },
+  { name: "KB Overhead Carry", equip: ["kettlebell"], split: "upper", muscles: ["shoulders","core","triceps"], type: "strength", diff: "intermediate", desc: "Walk with KB locked out overhead. Shoulder stability under duration, core braced throughout.", sets: "3x30-40m each side" },
+  { name: "KB Rack Carry", equip: ["kettlebell"], split: "upper", muscles: ["core","shoulders","biceps"], type: "strength", diff: "beginner", desc: "Walk with KB in the rack position. Challenges breathing under load and core stability.", sets: "3x40m each side" },
+  { name: "KB Double Rack Carry", equip: ["kettlebell"], split: "upper", muscles: ["core","shoulders","back"], type: "strength", diff: "intermediate", desc: "Two KBs in rack, walk. Heavy front-loaded carry that builds trunk strength and work capacity.", sets: "3x30m" },
+  { name: "KB Upright Row", equip: ["kettlebell"], split: "upper", muscles: ["shoulders","traps"], type: "strength", diff: "beginner", desc: "Pull KB from hang to chin height, elbows leading. Hit the lateral delts and upper traps.", sets: "3x10-12" },
+  { name: "KB High Pull", equip: ["kettlebell"], split: "upper", muscles: ["shoulders","traps","glutes"], type: "power", diff: "intermediate", desc: "Explosive swing-to-shoulder-height pull. Elbow drives high. Great snatch progression.", sets: "3x8 each side" },
+  { name: "KB Pullover", equip: ["kettlebell"], split: "upper", muscles: ["lats","chest","core"], type: "strength", diff: "beginner", desc: "Lying on floor or bench, arc KB from chest overhead and back. Stretches lats under load.", sets: "3x10-12" },
+  { name: "KB Chest-Supported Row", equip: ["kettlebell"], split: "upper", muscles: ["back","biceps"], type: "strength", diff: "beginner", desc: "Lie face down on an incline bench and row. Eliminates momentum for pure back isolation.", sets: "3x10 each side" },
+  { name: "KB Plank Row", equip: ["kettlebell"], split: "upper", muscles: ["back","core"], type: "strength", diff: "intermediate", desc: "Single KB version of renegade row. One hand on floor, one rows. Anti-rotation with pull.", sets: "3x8 each side" },
+  { name: "KB Farmer's Walk (Double)", equip: ["kettlebell"], split: "upper", muscles: ["grip","traps","core"], type: "strength", diff: "beginner", desc: "Two heavy KBs at your sides, walk with purpose. Total body tension, grip, and posture.", sets: "3x40-60m" },
+
+  // Upper — mainstream / viral
+  { name: "KB Clean & Press", equip: ["kettlebell"], split: "upper", muscles: ["shoulders","glutes","hamstrings","core"], type: "power", diff: "intermediate", desc: "The #1 most-programmed KB combo on YouTube. Clean to rack then press. Full-body power and pressing strength in one seamless movement.", sets: "4x5-6 each side" },
+  { name: "KB Gorilla Clean", equip: ["kettlebell"], split: "upper", muscles: ["back","glutes","grip","core"], type: "power", diff: "intermediate", desc: "Alternating dual-KB hang clean — clean one while lowering the other. A viral HIIT staple that skyrockets heart rate. Seen across BOXROX, Onnit, and FunkMMA.", sets: "3x8-10" },
+  { name: "KB Dead Clean", equip: ["kettlebell"], split: "upper", muscles: ["glutes","hamstrings","shoulders"], type: "power", diff: "beginner", desc: "Clean from a dead stop on the floor — no swing momentum. The first clean variation everyone should learn. Builds explosive hip power from zero.", sets: "3x6-8 each side" },
+  { name: "KB Bottoms-Up Clean", equip: ["kettlebell"], split: "upper", muscles: ["grip","shoulders","core"], type: "strength", diff: "advanced", desc: "Clean the KB to rack with bottom facing up. Forces perfect alignment and insane grip activation. A shoulder-rehab favourite among physios on Instagram.", sets: "3x5 each side" },
+  { name: "KB Swing Clean", equip: ["kettlebell"], split: "upper", muscles: ["glutes","hamstrings","shoulders"], type: "power", diff: "intermediate", desc: "Clean using swing momentum — the standard competitive clean. Smoother and faster than dead clean once technique is dialled in.", sets: "3x8 each side" },
+  { name: "KB Long Press", equip: ["kettlebell"], split: "upper", muscles: ["shoulders","triceps","core"], type: "strength", diff: "advanced", desc: "Slow eccentric from overhead lockout, pausing halfway down. Time-under-tension pressing that builds bulletproof shoulders. Popular in StrongFirst circles.", sets: "3x5 each side" },
+  { name: "KB Crush Press", equip: ["kettlebell"], split: "upper", muscles: ["chest","triceps","core"], type: "strength", diff: "intermediate", desc: "Press two KBs together squeezing them inward throughout. Massive chest activation without a bench. A Bret Contreras and Eric Leija favourite.", sets: "3x10-12" },
+  { name: "KB Viking Push Press", equip: ["kettlebell"], split: "upper", muscles: ["shoulders","triceps","core"], type: "power", diff: "intermediate", desc: "Two KBs in rack, dip-and-drive both simultaneously overhead. Heavier than single-arm, builds overhead power fast.", sets: "4x5-6" },
+
+  // Lower
+  { name: "KB Goblet Squat", equip: ["kettlebell"], split: "lower", muscles: ["quads","glutes","core"], type: "strength", diff: "beginner", desc: "Hold KB at chest, squat deep. The king of kettlebell squat patterns.", sets: "4x10-12" },
+  { name: "KB Front Squat (Double)", equip: ["kettlebell"], split: "lower", muscles: ["quads","glutes","core"], type: "strength", diff: "intermediate", desc: "Rack two KBs and squat. Heavier loading than goblet for when you outgrow a single bell.", sets: "4x6-8" },
+  { name: "KB Swing", equip: ["kettlebell"], split: "lower", muscles: ["glutes","hamstrings","core"], type: "power", diff: "beginner", desc: "The foundational KB movement. Explosive hip hinge driving the bell forward.", sets: "5x15-20" },
+  { name: "KB Single-Arm Swing", equip: ["kettlebell"], split: "lower", muscles: ["glutes","hamstrings","grip"], type: "power", diff: "intermediate", desc: "One-arm swing adds rotational anti-force and grip work. Switch hands at the top.", sets: "4x10-12 each side" },
+  { name: "KB Clean", equip: ["kettlebell"], split: "full", muscles: ["glutes","hamstrings","shoulders"], type: "power", diff: "intermediate", desc: "Swing the KB into rack position. A key transitional movement for all pressing work.", sets: "3x8 each side" },
+  { name: "KB Snatch", equip: ["kettlebell"], split: "full", muscles: ["glutes","hamstrings","shoulders","core"], type: "power", diff: "advanced", desc: "One explosive pull from floor to overhead lockout. The tsar of kettlebell lifts.", sets: "4x6-8 each side" },
+  { name: "KB Single-Leg Deadlift", equip: ["kettlebell"], split: "lower", muscles: ["hamstrings","glutes","core"], type: "strength", diff: "intermediate", desc: "Hinge on one leg, KB in opposite hand. Balance, hamstring strength, and posterior chain.", sets: "3x8 each side" },
+  { name: "KB Romanian Deadlift (Double)", equip: ["kettlebell"], split: "lower", muscles: ["hamstrings","glutes","back"], type: "strength", diff: "beginner", desc: "Two-bell hip hinge with slight knee bend. Load the hamstrings eccentrically.", sets: "4x8-10" },
+  { name: "KB Lateral Lunge", equip: ["kettlebell"], split: "lower", muscles: ["adductors","quads","glutes"], type: "strength", diff: "intermediate", desc: "Goblet hold, step wide to one side and sit into the hip. Builds frontal plane strength.", sets: "3x8 each side" },
+  { name: "KB Step-Up", equip: ["kettlebell"], split: "lower", muscles: ["quads","glutes"], type: "strength", diff: "beginner", desc: "Hold KB(s) and step onto a box or bench. Drive through the lead leg, don't push off the back.", sets: "3x10 each side" },
+  { name: "KB Reverse Lunge", equip: ["kettlebell"], split: "lower", muscles: ["quads","glutes","core"], type: "strength", diff: "beginner", desc: "Step back into lunge with KB in goblet or rack position. Knee-friendly lunge pattern.", sets: "3x10 each side" },
+  { name: "KB Cossack Squat", equip: ["kettlebell"], split: "lower", muscles: ["adductors","quads","hips"], type: "mobility", diff: "intermediate", desc: "Deep lateral squat with goblet hold. Excellent for hip mobility and adductor strength.", sets: "3x6 each side" },
+  { name: "KB Swing to Squat", equip: ["kettlebell"], split: "full", muscles: ["glutes","quads","core"], type: "cardio", diff: "intermediate", desc: "Alternate swings and goblet squats without rest. Brutal conditioning complex.", sets: "4x(10 swings + 5 squats)" },
+
+  // Lower/Full — mainstream / viral
+  { name: "KB Deck Squat", equip: ["kettlebell"], split: "lower", muscles: ["quads","glutes","core","hips"], type: "mobility", diff: "intermediate", desc: "Roll to your back from a deep squat, then use momentum to stand. Floor-to-standing mobility drill that went viral on Instagram. Tests and builds hip and ankle mobility.", sets: "3x5-6" },
+  { name: "KB Lunge to Press", equip: ["kettlebell"], split: "full", muscles: ["quads","glutes","shoulders","core"], type: "strength", diff: "intermediate", desc: "Reverse lunge flowing into an overhead press at the top. Full-body coordination. A staple of kettlebell flow workouts on YouTube.", sets: "3x6-8 each side" },
+  { name: "KB Swing to Snatch", equip: ["kettlebell"], split: "full", muscles: ["glutes","hamstrings","shoulders"], type: "power", diff: "intermediate", desc: "Alternate swings and snatches — 1 swing then 1 snatch. Teaches snatch timing while keeping volume high. Popular in Mark Wildman programming.", sets: "3x(5+5) each side" },
+  { name: "KB Double Clean & Squat", equip: ["kettlebell"], split: "lower", muscles: ["quads","glutes","hamstrings","core"], type: "strength", diff: "intermediate", desc: "Clean two KBs to rack then front squat. Heavier loading than goblet, with the clean adding a hip hinge element. StrongFirst programming essential.", sets: "4x5-6" },
+  { name: "KB Tactical Lunge", equip: ["kettlebell"], split: "lower", muscles: ["quads","glutes","core","grip"], type: "strength", diff: "intermediate", desc: "Reverse lunge passing the KB under the front leg to the other hand at the bottom. Adds coordination and grip challenge. A Jeff Cavaliere (Athlean-X) and Eric Leija staple.", sets: "3x8 each side" },
+  { name: "KB Goblet Squat to Press", equip: ["kettlebell"], split: "full", muscles: ["quads","glutes","shoulders","core"], type: "power", diff: "beginner", desc: "Squat with KB at chest, stand and press overhead in one movement. Simpler than the thruster — great beginner full-body conditioning move seen across all KB YouTube channels.", sets: "3x8-10" },
+  { name: "KB Single-Arm Deadlift", equip: ["kettlebell"], split: "lower", muscles: ["hamstrings","glutes","grip","core"], type: "strength", diff: "beginner", desc: "Standard deadlift pattern with one KB. Asymmetric loading challenges anti-rotation. A foundational move in every KB program on Earth.", sets: "3x8-10 each side" },
+  { name: "KB Pistol Squat", equip: ["kettlebell"], split: "lower", muscles: ["quads","glutes","core"], type: "strength", diff: "advanced", desc: "Single-leg squat holding KB as counterbalance at chest. The KB actually makes the pistol easier by shifting your centre of gravity forward. Huge on Instagram and calisthenic channels.", sets: "3x3-5 each side" },
+  { name: "KB Skier Swing", equip: ["kettlebell"], split: "lower", muscles: ["glutes","hamstrings","lats"], type: "power", diff: "intermediate", desc: "Two KBs swung together with arms at your sides like a skier. Different groove than standard swing — hammers the lats and posterior chain.", sets: "4x10-12" },
+  { name: "KB Figure-4 Deadlift", equip: ["kettlebell"], split: "lower", muscles: ["hamstrings","glutes","core"], type: "strength", diff: "intermediate", desc: "Single-leg deadlift with non-working ankle crossed above the working knee. More stable than a pure SL deadlift but still unilateral. A Wildman Athletica favourite.", sets: "3x6-8 each side" },
+  { name: "KB Clean, Squat & Press", equip: ["kettlebell"], split: "full", muscles: ["glutes","quads","shoulders","core"], type: "power", diff: "intermediate", desc: "The holy trinity complex — clean to rack, front squat, then press. One of the most viewed KB exercises on YouTube. Full-body strength and conditioning in one chain.", sets: "3x5 each side" },
+  { name: "KB Squat to Curl", equip: ["kettlebell"], split: "full", muscles: ["quads","glutes","biceps"], type: "strength", diff: "beginner", desc: "Goblet squat with a bicep curl at the top. A popular time-efficient combo move from Nourish Move Love and similar channels.", sets: "3x10-12" },
+
+  // Lower — additional
+  { name: "KB Sumo Deadlift", equip: ["kettlebell"], split: "lower", muscles: ["glutes","adductors","hamstrings"], type: "strength", diff: "beginner", desc: "Wide stance deadlift with KB between feet. Hits the glutes and inner thighs harder than conventional.", sets: "4x8-10" },
+  { name: "KB Deficit Deadlift", equip: ["kettlebell"], split: "lower", muscles: ["hamstrings","glutes","back"], type: "strength", diff: "intermediate", desc: "Stand on a plate or low step, deadlift KB from a deeper position. Extended range of motion for the posterior chain.", sets: "3x8 each side" },
+  { name: "KB Overhead Squat", equip: ["kettlebell"], split: "lower", muscles: ["quads","glutes","shoulders","core"], type: "strength", diff: "advanced", desc: "Squat with KB locked out overhead. Tests ankle, hip, thoracic, and shoulder mobility simultaneously.", sets: "3x6 each side" },
+  { name: "KB Bulgarian Split Squat", equip: ["kettlebell"], split: "lower", muscles: ["quads","glutes","core"], type: "strength", diff: "intermediate", desc: "Rear foot elevated, KB in goblet or rack position. Unilateral quad and glute destroyer.", sets: "3x8 each side" },
+  { name: "KB Front Rack Lunge Walk", equip: ["kettlebell"], split: "lower", muscles: ["quads","glutes","core"], type: "strength", diff: "intermediate", desc: "Walking lunges with KB(s) in the rack. Moving under load builds stability and leg endurance.", sets: "3x10 each side" },
+  { name: "KB Curtsy Lunge", equip: ["kettlebell"], split: "lower", muscles: ["glutes","quads","adductors"], type: "strength", diff: "intermediate", desc: "Step back and across behind the front leg. Targets glute medius and challenges balance.", sets: "3x8 each side" },
+  { name: "KB Swing (Hand-to-Hand)", equip: ["kettlebell"], split: "lower", muscles: ["glutes","hamstrings","grip","core"], type: "power", diff: "intermediate", desc: "Switch hands at the top of each swing. Adds a coordination and grip element to the standard swing.", sets: "4x10-12 each side" },
+  { name: "KB Dead-Stop Swing", equip: ["kettlebell"], split: "lower", muscles: ["glutes","hamstrings","core"], type: "power", diff: "beginner", desc: "Park the KB on the floor between each rep. Eliminates the stretch reflex — every rep starts from zero.", sets: "4x8-10" },
+  { name: "KB Staggered-Stance Deadlift", equip: ["kettlebell"], split: "lower", muscles: ["hamstrings","glutes","core"], type: "strength", diff: "intermediate", desc: "One foot slightly behind the other, hinge with KB. Halfway between bilateral and single-leg deadlift.", sets: "3x8 each side" },
+  { name: "KB Hip Hinge (Banded)", equip: ["kettlebell","band"], split: "lower", muscles: ["glutes","hamstrings"], type: "strength", diff: "intermediate", desc: "Loop a band around hips and anchor behind you, hinge with KB. Double resistance curve for the glutes.", sets: "3x10" },
+  { name: "KB Split Squat (Overhead Hold)", equip: ["kettlebell"], split: "lower", muscles: ["quads","glutes","shoulders","core"], type: "strength", diff: "advanced", desc: "Static split squat with KB locked out overhead on the front-leg side. Full-body stability under load.", sets: "3x6 each side" },
+  { name: "KB Box Squat", equip: ["kettlebell"], split: "lower", muscles: ["quads","glutes","hamstrings"], type: "strength", diff: "beginner", desc: "Goblet squat to a box or chair. Sit, pause, drive up. Teaches proper depth and removes the bounce.", sets: "4x8" },
+  { name: "KB Single-Leg Hip Thrust", equip: ["kettlebell"], split: "lower", muscles: ["glutes","hamstrings"], type: "strength", diff: "intermediate", desc: "KB on hip, one foot on floor, thrust up. Isolated glute strength per side.", sets: "3x10 each side" },
+  { name: "KB Thruster", equip: ["kettlebell"], split: "full", muscles: ["quads","glutes","shoulders","core"], type: "power", diff: "intermediate", desc: "Front squat into a press in one fluid movement. Total body power and metabolic demand.", sets: "3x8 each side" },
+  { name: "KB Clean & Jerk", equip: ["kettlebell"], split: "full", muscles: ["glutes","hamstrings","shoulders","core"], type: "power", diff: "advanced", desc: "Clean to rack then explosive jerk overhead. Competition-style lift combining power and timing.", sets: "4x5 each side" },
+  { name: "KB Double Swing", equip: ["kettlebell"], split: "lower", muscles: ["glutes","hamstrings","core","grip"], type: "power", diff: "intermediate", desc: "Two KBs swung together. Heavier load, wider stance, no anti-rotation — pure hip power.", sets: "4x10-12" },
+  { name: "KB Walking Swing", equip: ["kettlebell"], split: "lower", muscles: ["glutes","hamstrings","core"], type: "power", diff: "intermediate", desc: "Swing while walking forward — each swing propels you a step. Coordinates locomotion with ballistics.", sets: "3x20m" },
+
+  // Core
+  { name: "KB Dead Bug Pullover", equip: ["kettlebell"], split: "core", muscles: ["core","lats"], type: "strength", diff: "intermediate", desc: "Hold KB overhead in dead bug position, extend opposite limbs. Anti-extension core work.", sets: "3x6 each side" },
+  { name: "KB Hollow Hold", equip: ["kettlebell"], split: "core", muscles: ["core"], type: "strength", diff: "intermediate", desc: "Hold KB overhead in hollow body position. The load amplifies the anti-extension demand.", sets: "3x20-30s" },
+
+  // Core — additional
+  { name: "KB Russian Twist", equip: ["kettlebell"], split: "core", muscles: ["obliques","core"], type: "strength", diff: "beginner", desc: "Seated, feet off floor, rotate KB side to side. Classic loaded rotational core work.", sets: "3x10 each side" },
+  { name: "KB Sit-Up (Weighted)", equip: ["kettlebell"], split: "core", muscles: ["core","hip flexors"], type: "strength", diff: "intermediate", desc: "Hold KB at chest, full sit-up. The load makes the top half significantly harder.", sets: "3x10-12" },
+  { name: "KB Figure-8", equip: ["kettlebell"], split: "core", muscles: ["core","grip","shoulders"], type: "strength", diff: "beginner", desc: "Pass KB in a figure-8 pattern between and around the legs. Coordination drill that lights up the core.", sets: "3x30s" },
+  { name: "KB Plank Pull-Through", equip: ["kettlebell"], split: "core", muscles: ["core","lats"], type: "strength", diff: "intermediate", desc: "Plank position, drag KB from one side to the other under your body. Anti-rotation under movement.", sets: "3x8 each side" },
+  { name: "KB Side Bend", equip: ["kettlebell"], split: "core", muscles: ["obliques"], type: "strength", diff: "beginner", desc: "Hold KB in one hand, bend sideways and return. Simple but effective oblique isolator.", sets: "3x10 each side" },
+  { name: "KB Swing + Snatch Combo", equip: ["kettlebell"], split: "full", muscles: ["glutes","hamstrings","shoulders","core"], type: "cardio", diff: "intermediate", desc: "Alternate swings and snatches without rest. Elevates heart rate while training both patterns.", sets: "4x(5 swings + 5 snatches) each side" },
+  { name: "KB Around the World", equip: ["kettlebell"], split: "core", muscles: ["core","shoulders","grip"], type: "strength", diff: "beginner", desc: "Pass the KB around your waist in a circle. Light warm-up drill that activates core and grip.", sets: "2x10 each direction" },
+  { name: "KB Overhead March", equip: ["kettlebell"], split: "core", muscles: ["core","shoulders","hip flexors"], type: "strength", diff: "intermediate", desc: "Hold KB overhead, march in place lifting knees high. Anti-extension core with hip flexor work.", sets: "3x30s each side" },
+  { name: "KB Half Get-Up", equip: ["kettlebell"], split: "core", muscles: ["core","shoulders","obliques"], type: "strength", diff: "intermediate", desc: "First half of the Turkish Get-Up — floor to seated. Isolates the hardest core portion.", sets: "3x4 each side" },
+
+  // Core/Full — mainstream / viral
+  { name: "KB Swing Snatch Flow", equip: ["kettlebell"], split: "full", muscles: ["full body"], type: "cardio", diff: "intermediate", desc: "Continuous flow: swing-swing-clean-squat-press-snatch. Eric Leija-style flow that chains fundamentals into a single flowing sequence. Millions of views on Onnit channels.", sets: "3x3-5 flows each side" },
+  { name: "KB Man Maker", equip: ["kettlebell"], split: "full", muscles: ["chest","back","shoulders","core","legs"], type: "cardio", diff: "advanced", desc: "Pushup on KBs → row each side → clean to standing → press overhead. The ultimate full-body KB burpee. A CrossFit-to-kettlebell crossover that's everywhere on Instagram.", sets: "3x5-6" },
+  { name: "KB Hike Pass", equip: ["kettlebell"], split: "core", muscles: ["core","glutes","hamstrings"], type: "power", diff: "beginner", desc: "The starting position of every swing — hike the KB between your legs and stand. Drill this before you swing. Mark Wildman's #1 beginner cue.", sets: "3x10" },
+  { name: "KB Drag Crawl", equip: ["kettlebell"], split: "core", muscles: ["core","shoulders","lats"], type: "strength", diff: "intermediate", desc: "Bear crawl forward while dragging a KB alongside you. Anti-rotation, shoulder stability, and conditioning. A social media favourite for core work.", sets: "3x15m each side" },
+  { name: "KB Two-Hand Anyhow", equip: ["kettlebell"], split: "full", muscles: ["shoulders","core","hips","grip"], type: "strength", diff: "advanced", desc: "Get two differently-sized KBs overhead by any means necessary — clean one, press one, assist the other up. An old-time strongman lift revived on YouTube by Dan John.", sets: "3x2-3 each side" },
+  { name: "KB Goblet Squat Hold (Isometric)", equip: ["kettlebell"], split: "lower", muscles: ["quads","glutes","core","biceps"], type: "strength", diff: "beginner", desc: "Hold the bottom of a goblet squat for time. Dan John's cure for bad squat depth. A daily practice movement recommended by nearly every KB coach on social media.", sets: "3x30-45s" },
+
+  // ── RINGS ───────────────────────────────────────────────────
+  { name: "Ring Push-Up", equip: ["rings"], split: "upper", muscles: ["chest","triceps","core"], type: "strength", diff: "intermediate", desc: "Push-up with hands on rings. The instability recruits far more stabiliser muscles than floor push-ups.", sets: "4x8-12" },
+  { name: "Ring Dip", equip: ["rings"], split: "upper", muscles: ["chest","triceps","shoulders"], type: "strength", diff: "advanced", desc: "Full dip on rings with turnout at top. Requires solid straight-arm strength.", sets: "3x6-10" },
+  { name: "Ring Row (Inverted Row)", equip: ["rings"], split: "upper", muscles: ["back","biceps","core"], type: "strength", diff: "beginner", desc: "Pull your body up from an angled hang. Adjust difficulty by changing your foot position.", sets: "4x8-12" },
+  { name: "Ring Archer Row", equip: ["rings"], split: "upper", muscles: ["back","biceps","core"], type: "strength", diff: "advanced", desc: "One arm pulls, the other extends straight. Unilateral back strength on rings.", sets: "3x5-6 each side" },
+  { name: "Ring Face Pull", equip: ["rings"], split: "upper", muscles: ["rear delts","upper back"], type: "strength", diff: "beginner", desc: "Pull rings to face level with elbows high. Critical for shoulder health and posture.", sets: "3x12-15" },
+  { name: "Ring Bicep Curl", equip: ["rings"], split: "upper", muscles: ["biceps"], type: "strength", diff: "intermediate", desc: "Lean back and curl yourself up using ring handles. Body-angle adjusts difficulty.", sets: "3x8-12" },
+  { name: "Ring Tricep Extension", equip: ["rings"], split: "upper", muscles: ["triceps"], type: "strength", diff: "intermediate", desc: "Lean forward, extend arms from forehead to lockout. Bodyweight skull crusher.", sets: "3x8-10" },
+  { name: "Ring Support Hold", equip: ["rings"], split: "upper", muscles: ["shoulders","triceps","core"], type: "strength", diff: "intermediate", desc: "Hold the top of a dip position with rings turned out. Foundation skill for ring work.", sets: "3x20-30s" },
+  { name: "Ring L-Sit", equip: ["rings"], split: "core", muscles: ["core","hip flexors","triceps"], type: "strength", diff: "advanced", desc: "Hold an L-sit on rings. Combines core compression with shoulder depression.", sets: "3x10-20s" },
+  { name: "Ring Ab Rollout", equip: ["rings"], split: "core", muscles: ["core","lats"], type: "strength", diff: "advanced", desc: "From kneeling, extend rings forward and pull back. Anti-extension at its hardest.", sets: "3x6-8" },
+  { name: "Ring Muscle-Up", equip: ["rings"], split: "upper", muscles: ["back","chest","shoulders","triceps"], type: "power", diff: "advanced", desc: "Pull then transition above rings into a dip. The pinnacle upper-body rings movement.", sets: "3-5x1-3" },
+  { name: "Ring Skin the Cat", equip: ["rings"], split: "upper", muscles: ["shoulders","lats","core"], type: "mobility", diff: "intermediate", desc: "Hang, rotate backwards through, and return. Deep shoulder stretch under load.", sets: "3x3-5" },
+  { name: "Ring Pike Push-Up", equip: ["rings"], split: "upper", muscles: ["shoulders","triceps"], type: "strength", diff: "intermediate", desc: "Feet elevated, pike angle push-up on rings. Overhead pressing progression.", sets: "3x6-10" },
+  { name: "Ring Fly", equip: ["rings"], split: "upper", muscles: ["chest","core"], type: "strength", diff: "advanced", desc: "Open arms wide on rings from a push-up position and squeeze back. Ring-based chest isolation.", sets: "3x6-8" },
+  { name: "Ring Plank", equip: ["rings"], split: "core", muscles: ["core","shoulders"], type: "strength", diff: "beginner", desc: "Standard plank with hands on rings. The instability makes your core work much harder.", sets: "3x30-45s" },
+  { name: "Ring Body Saw", equip: ["rings"], split: "core", muscles: ["core","shoulders"], type: "strength", diff: "intermediate", desc: "From ring plank, shift body forward and back. Dynamic anti-extension challenge.", sets: "3x8-10" },
+  { name: "Ring Knee Tuck", equip: ["rings"], split: "core", muscles: ["core","hip flexors"], type: "strength", diff: "intermediate", desc: "Feet in rings, plank position, pull knees to chest. Great for dynamic core strength.", sets: "3x10-12" },
+  { name: "Ring Fall-Out", equip: ["rings"], split: "core", muscles: ["core","chest","lats"], type: "strength", diff: "advanced", desc: "From standing, slowly fall forward letting rings extend overhead, pull back to start. Full-body tension.", sets: "3x5-6" },
+
+  // ── BANDS ───────────────────────────────────────────────────
+  { name: "Band Pull-Apart", equip: ["band"], split: "upper", muscles: ["rear delts","upper back"], type: "strength", diff: "beginner", desc: "Hold band at shoulder width, pull apart until it touches your chest. Daily shoulder health staple.", sets: "3x15-20" },
+  { name: "Band Overhead Press", equip: ["band"], split: "upper", muscles: ["shoulders","triceps"], type: "strength", diff: "beginner", desc: "Stand on band, press overhead. The ascending resistance curve matches natural strength.", sets: "3x12-15" },
+  { name: "Band Lat Pulldown", equip: ["band"], split: "upper", muscles: ["lats","biceps"], type: "strength", diff: "beginner", desc: "Anchor band high, pull down to chest. Light version of a lat pulldown machine.", sets: "3x12-15" },
+  { name: "Band Face Pull", equip: ["band"], split: "upper", muscles: ["rear delts","rotator cuff"], type: "strength", diff: "beginner", desc: "Anchor band at face height, pull with external rotation. Key for shoulder prehab.", sets: "3x15-20" },
+  { name: "Band Chest Press", equip: ["band"], split: "upper", muscles: ["chest","triceps"], type: "strength", diff: "beginner", desc: "Anchor band behind you, press forward. Good for volume work and burnout sets.", sets: "3x12-15" },
+  { name: "Band Tricep Pushdown", equip: ["band"], split: "upper", muscles: ["triceps"], type: "strength", diff: "beginner", desc: "Anchor band overhead, push down to lockout. Constant tension on triceps.", sets: "3x15-20" },
+  { name: "Band Bicep Curl", equip: ["band"], split: "upper", muscles: ["biceps"], type: "strength", diff: "beginner", desc: "Stand on band, curl up. The hardest point matches your strongest position.", sets: "3x12-15" },
+  { name: "Band External Rotation", equip: ["band"], split: "upper", muscles: ["rotator cuff"], type: "mobility", diff: "beginner", desc: "Elbow pinned to side, rotate forearm outward against band. Rotator cuff prehab essential.", sets: "2x15 each side" },
+  { name: "Band Dislocate", equip: ["band"], split: "upper", muscles: ["shoulders"], type: "mobility", diff: "beginner", desc: "Wide grip on band, pass it over your head and behind your back. Progressive shoulder opener.", sets: "2x10" },
+  { name: "Band Good Morning", equip: ["band"], split: "lower", muscles: ["hamstrings","glutes","back"], type: "strength", diff: "beginner", desc: "Band around neck and under feet, hinge forward. Light posterior chain activation.", sets: "3x12-15" },
+  { name: "Band Hip Thrust", equip: ["band"], split: "lower", muscles: ["glutes"], type: "strength", diff: "beginner", desc: "Band over hips, thrust up from floor or bench. Glute isolation with peak tension at lockout.", sets: "3x15-20" },
+  { name: "Band Pallof Press", equip: ["band"], split: "core", muscles: ["core","obliques"], type: "strength", diff: "beginner", desc: "Anchor band at chest height, press out and hold. Gold-standard anti-rotation exercise.", sets: "3x10 each side" },
+  { name: "Band Monster Walk", equip: ["band"], split: "lower", muscles: ["glute medius","hips"], type: "strength", diff: "beginner", desc: "Mini-band around ankles, walk laterally and forward. Fires up glute medius for hip stability.", sets: "3x15 steps each way" },
+  { name: "Band Squat", equip: ["band"], split: "lower", muscles: ["quads","glutes"], type: "strength", diff: "beginner", desc: "Band under feet and over shoulders, squat. Adds accommodating resistance at the top.", sets: "3x12-15" },
+  { name: "Band Hamstring Curl", equip: ["band"], split: "lower", muscles: ["hamstrings"], type: "strength", diff: "beginner", desc: "Anchor band low, curl heel to glute from standing or prone. Hamstring isolation.", sets: "3x12-15 each side" },
+  { name: "Band Shoulder Pass-Through", equip: ["band"], split: "upper", muscles: ["shoulders","chest"], type: "mobility", diff: "beginner", desc: "Wider grip version of the dislocate, moving slowly. Warm-up for any pressing day.", sets: "2x10" },
+
+  // ── PULL-UP BAR ─────────────────────────────────────────────
+  { name: "Pull-Up", equip: ["pullup bar"], split: "upper", muscles: ["lats","biceps","core"], type: "strength", diff: "intermediate", desc: "Overhand grip, pull chin over bar. The benchmark upper-body pull.", sets: "4x5-8" },
+  { name: "Chin-Up", equip: ["pullup bar"], split: "upper", muscles: ["biceps","lats"], type: "strength", diff: "intermediate", desc: "Underhand grip pull-up. More bicep emphasis, often easier than pull-ups.", sets: "4x6-10" },
+  { name: "Wide-Grip Pull-Up", equip: ["pullup bar"], split: "upper", muscles: ["lats","teres major"], type: "strength", diff: "advanced", desc: "Hands wider than shoulder width. Greater lat width emphasis.", sets: "3x5-8" },
+  { name: "Close-Grip Chin-Up", equip: ["pullup bar"], split: "upper", muscles: ["biceps","lats","core"], type: "strength", diff: "intermediate", desc: "Hands close together, palms facing you. Peak bicep and inner lat activation.", sets: "3x6-10" },
+  { name: "Mixed-Grip Pull-Up", equip: ["pullup bar"], split: "upper", muscles: ["lats","biceps","forearms"], type: "strength", diff: "intermediate", desc: "One hand over, one under. Trains asymmetry and grip variety.", sets: "3x5-7 each grip" },
+  { name: "Archer Pull-Up", equip: ["pullup bar"], split: "upper", muscles: ["lats","biceps"], type: "strength", diff: "advanced", desc: "Pull to one side while other arm extends along the bar. One-arm pull-up progression.", sets: "3x3-5 each side" },
+  { name: "Typewriter Pull-Up", equip: ["pullup bar"], split: "upper", muscles: ["lats","biceps","core"], type: "strength", diff: "advanced", desc: "Pull up, then shift side to side while staying above the bar. Insane lat endurance.", sets: "3x3-4 each side" },
+  { name: "Hanging Knee Raise", equip: ["pullup bar"], split: "core", muscles: ["core","hip flexors"], type: "strength", diff: "beginner", desc: "Hang from bar, raise knees to chest. Decompresses spine while building core.", sets: "3x10-15" },
+  { name: "Hanging Leg Raise", equip: ["pullup bar"], split: "core", muscles: ["core","hip flexors"], type: "strength", diff: "intermediate", desc: "Straight legs up to bar level. Much harder than knee raises — control the swing.", sets: "3x8-12" },
+  { name: "Toes to Bar", equip: ["pullup bar"], split: "core", muscles: ["core","lats","hip flexors"], type: "strength", diff: "advanced", desc: "Bring toes all the way to the bar. Full-range core strength under hang.", sets: "3x6-10" },
+  { name: "Hanging Windshield Wiper", equip: ["pullup bar"], split: "core", muscles: ["obliques","core"], type: "strength", diff: "advanced", desc: "Legs raised, rotate side to side like a wiper. Elite rotational core strength.", sets: "3x5 each side" },
+  { name: "Dead Hang", equip: ["pullup bar"], split: "upper", muscles: ["grip","shoulders","lats"], type: "mobility", diff: "beginner", desc: "Simply hang with relaxed shoulders. Decompresses spine, stretches lats, builds grip.", sets: "3x30-60s" },
+  { name: "Active Hang", equip: ["pullup bar"], split: "upper", muscles: ["shoulders","lats","scapula"], type: "strength", diff: "beginner", desc: "Hang and depress scapulae (pull shoulders down). Foundation for all bar work.", sets: "3x15-20s" },
+  { name: "Scapular Pull-Up", equip: ["pullup bar"], split: "upper", muscles: ["scapula","lats"], type: "strength", diff: "beginner", desc: "From dead hang, retract and depress scapulae without bending arms. Scap control drill.", sets: "3x8-10" },
+  { name: "Negative Pull-Up", equip: ["pullup bar"], split: "upper", muscles: ["lats","biceps"], type: "strength", diff: "beginner", desc: "Jump or step to the top, lower yourself over 4-5 seconds. Best pull-up builder for beginners.", sets: "4x4-5 (slow descent)" },
+  { name: "Muscle-Up (Bar)", equip: ["pullup bar"], split: "upper", muscles: ["lats","chest","triceps"], type: "power", diff: "advanced", desc: "Explosive pull-up transitioning above the bar. Requires kip and false grip.", sets: "3-5x1-3" },
+
+  // ── BODYWEIGHT (no equipment or using multiple) ─────────────
+  { name: "Burpee", equip: ["bodyweight"], split: "full", muscles: ["full body"], type: "cardio", diff: "intermediate", desc: "Squat thrust with push-up and jump. Love it or hate it, it works.", sets: "3x10-15" },
+  { name: "Mountain Climber", equip: ["bodyweight"], split: "core", muscles: ["core","hip flexors","shoulders"], type: "cardio", diff: "beginner", desc: "Plank position, drive knees to chest alternating. Cardio and core in one.", sets: "3x30s" },
+  { name: "Bear Crawl", equip: ["bodyweight"], split: "full", muscles: ["shoulders","core","quads"], type: "cardio", diff: "beginner", desc: "Crawl on all fours, knees hovering. Coordination, core, and conditioning.", sets: "3x20m" },
+  { name: "Broad Jump", equip: ["bodyweight"], split: "lower", muscles: ["quads","glutes","calves"], type: "power", diff: "beginner", desc: "Explosive horizontal jump from standing. Pure lower-body power.", sets: "4x5" },
+  { name: "Jump Squat", equip: ["bodyweight"], split: "lower", muscles: ["quads","glutes","calves"], type: "power", diff: "beginner", desc: "Squat down, explode up. Builds reactive strength in the legs.", sets: "3x10" },
+  { name: "Hollow Body Hold", equip: ["bodyweight"], split: "core", muscles: ["core"], type: "strength", diff: "beginner", desc: "Lie flat, arms overhead, lift shoulders and legs. Gymnastics core foundation.", sets: "3x20-30s" },
+  { name: "Arch Hold (Superman)", equip: ["bodyweight"], split: "core", muscles: ["back","glutes"], type: "strength", diff: "beginner", desc: "Prone, lift arms and legs off the floor. Posterior chain counterpart to hollow body.", sets: "3x20-30s" },
+  { name: "World's Greatest Stretch", equip: ["bodyweight"], split: "full", muscles: ["hips","thoracic","hamstrings"], type: "mobility", diff: "beginner", desc: "Lunge, rotate, reach. Hits hips, thoracic spine, hamstrings, and groin in one flow.", sets: "2x5 each side" },
+  { name: "90/90 Hip Switch", equip: ["bodyweight"], split: "lower", muscles: ["hips"], type: "mobility", diff: "beginner", desc: "Sit with legs in 90/90, rotate through center to switch sides. Hip internal/external rotation.", sets: "2x8 each side" },
+  { name: "Deep Squat Hold", equip: ["bodyweight"], split: "lower", muscles: ["hips","ankles","quads"], type: "mobility", diff: "beginner", desc: "Sit at the bottom of a squat and breathe. Open hips, stretch ankles.", sets: "2x45-60s" },
+  { name: "Cat-Cow", equip: ["bodyweight"], split: "full", muscles: ["spine"], type: "mobility", diff: "beginner", desc: "Alternate spinal flexion and extension on all fours. Wakes up the entire spine.", sets: "2x10" },
+  { name: "Prone Y-T-W Raise", equip: ["bodyweight"], split: "upper", muscles: ["upper back","rear delts","rotator cuff"], type: "mobility", diff: "beginner", desc: "Face down, lift arms in Y, T, then W patterns. Activates posterior shoulder complex.", sets: "2x8 each shape" },
+];
+
+// ============================================================
+// WEEKLY TEMPLATES
+// ============================================================
+const templates = [
+  // ═══════════ STRENGTH TEMPLATES ═══════════
+  {
+    title: "Heavy Grind — Kettlebell Strength",
+    cat: "strength",
+    desc: "Low reps, heavy bells, long rest. Pure grinding strength with upper/lower split. 2-3 min rest between sets.",
+    days: [
+      { day: "Monday", label: "Upper Push", type: "upper", exercises: [
+        { name: "KB Single-Arm Press", sets: "5x3-5 ea" },
+        { name: "KB Bottoms-Up Press", sets: "3x5 ea" },
+        { name: "KB Floor Press", sets: "4x6 ea" },
+        { name: "Ring Push-Up (weighted vest or slow)", sets: "3x8" },
+        { name: "KB Suitcase Carry (heavy)", sets: "3x40m ea" },
+      ]},
+      { day: "Tuesday", label: "Lower Grind", type: "lower", exercises: [
+        { name: "KB Front Squat (Double)", sets: "5x5" },
+        { name: "KB Romanian Deadlift (Double)", sets: "4x6" },
+        { name: "KB Single-Leg Deadlift", sets: "3x6 ea" },
+        { name: "KB Step-Up (heavy)", sets: "3x6 ea" },
+        { name: "Band Pallof Press", sets: "3x10 ea" },
+      ]},
+      { day: "Wednesday", label: "Mobility", type: "mobility", exercises: [
+        { name: "World's Greatest Stretch", sets: "3x5 ea" },
+        { name: "KB Arm Bar", sets: "2x30s ea" },
+        { name: "KB Halo", sets: "2x8 ea" },
+        { name: "90/90 Hip Switch", sets: "3x8 ea" },
+        { name: "Deep Squat Hold", sets: "3x45s" },
+        { name: "Dead Hang", sets: "3x45s" },
+      ]},
+      { day: "Thursday", label: "Upper Pull", type: "upper", exercises: [
+        { name: "Pull-Up", sets: "5x3-5" },
+        { name: "KB Gorilla Row", sets: "4x6-8 ea" },
+        { name: "Archer Pull-Up", sets: "3x3 ea" },
+        { name: "Ring Archer Row", sets: "3x5 ea" },
+        { name: "KB Waiter Walk", sets: "3x30m ea" },
+      ]},
+      { day: "Friday", label: "Lower Power", type: "lower", exercises: [
+        { name: "KB Snatch", sets: "5x5 ea" },
+        { name: "KB Goblet Squat (pause 3s)", sets: "4x6" },
+        { name: "KB Swing (heavy)", sets: "5x10" },
+        { name: "KB Lateral Lunge", sets: "3x6 ea" },
+        { name: "Toes to Bar", sets: "3x8" },
+      ]},
+      { day: "Saturday", label: "Easy Cardio", type: "cardio", exercises: [
+        { name: "KB Swing (light)", sets: "3x20" },
+        { name: "Bear Crawl", sets: "3x20m" },
+        { name: "Band Pull-Apart", sets: "3x20" },
+        { name: "Hollow Body Hold", sets: "3x30s" },
+      ]},
+      { day: "Sunday", label: "Rest", type: "rest", exercises: [
+        { name: "Walk, stretch, or light play", sets: "Enjoy it" },
+      ]},
+    ]
+  },
+  {
+    title: "Ring Strength Builder",
+    cat: "strength",
+    desc: "Gymnastics-biased strength. Rings for pushing/pulling, bar for heavy pulls, KB for legs. Long rest, low reps.",
+    days: [
+      { day: "Monday", label: "Ring Push", type: "upper", exercises: [
+        { name: "Ring Support Hold", sets: "3x30s" },
+        { name: "Ring Dip", sets: "5x5-8" },
+        { name: "Ring Push-Up (feet elevated)", sets: "4x8" },
+        { name: "Ring Pike Push-Up", sets: "3x6-8" },
+        { name: "Ring Fly", sets: "3x6" },
+      ]},
+      { day: "Tuesday", label: "KB Lower", type: "lower", exercises: [
+        { name: "KB Front Squat (Double)", sets: "5x5" },
+        { name: "KB Single-Leg Deadlift", sets: "4x6 ea" },
+        { name: "KB Reverse Lunge (rack hold)", sets: "3x8 ea" },
+        { name: "KB Swing (heavy)", sets: "5x10" },
+        { name: "Hanging Leg Raise", sets: "3x10" },
+      ]},
+      { day: "Wednesday", label: "Mobility + Skill", type: "mobility", exercises: [
+        { name: "Ring Skin the Cat", sets: "3x4" },
+        { name: "KB Turkish Get-Up", sets: "3x2 ea" },
+        { name: "Band Dislocate", sets: "2x10" },
+        { name: "KB Windmill", sets: "3x5 ea" },
+        { name: "Deep Squat Hold", sets: "3x60s" },
+        { name: "Cat-Cow", sets: "2x10" },
+      ]},
+      { day: "Thursday", label: "Bar + Ring Pull", type: "upper", exercises: [
+        { name: "Pull-Up", sets: "5x5" },
+        { name: "Ring Row (feet elevated)", sets: "4x8-10" },
+        { name: "Chin-Up", sets: "3x6-8" },
+        { name: "Ring Face Pull", sets: "3x12" },
+        { name: "Scapular Pull-Up", sets: "3x10" },
+      ]},
+      { day: "Friday", label: "KB Power + Core", type: "lower", exercises: [
+        { name: "KB Clean", sets: "3x6 ea" },
+        { name: "KB Goblet Squat", sets: "4x8" },
+        { name: "KB Romanian Deadlift (Double)", sets: "4x8" },
+        { name: "Ring L-Sit", sets: "3x15s" },
+        { name: "Ring Knee Tuck", sets: "3x10" },
+      ]},
+      { day: "Saturday", label: "Light Conditioning", type: "cardio", exercises: [
+        { name: "KB Swing", sets: "3x20" },
+        { name: "Mountain Climber", sets: "3x30s" },
+        { name: "Band Pull-Apart", sets: "3x15" },
+        { name: "Arch Hold (Superman)", sets: "3x20s" },
+      ]},
+      { day: "Sunday", label: "Rest", type: "rest", exercises: [
+        { name: "Walk, stretch, or light play", sets: "Enjoy it" },
+      ]},
+    ]
+  },
+  {
+    title: "Press & Pull Specialization",
+    cat: "strength",
+    desc: "Prioritise overhead pressing and pull-up numbers. Two dedicated upper days per movement pattern plus heavy legs.",
+    days: [
+      { day: "Monday", label: "Press Focus", type: "upper", exercises: [
+        { name: "KB Single-Arm Press", sets: "5x5 ea" },
+        { name: "KB Push Press", sets: "3x6 ea" },
+        { name: "Ring Dip", sets: "4x6-8" },
+        { name: "Band Pull-Apart", sets: "3x20" },
+        { name: "KB Waiter Walk", sets: "3x30m ea" },
+      ]},
+      { day: "Tuesday", label: "Squat + Hinge", type: "lower", exercises: [
+        { name: "KB Front Squat (Double)", sets: "5x5" },
+        { name: "KB Romanian Deadlift (Double)", sets: "4x8" },
+        { name: "KB Cossack Squat", sets: "3x6 ea" },
+        { name: "Band Hip Thrust", sets: "3x15" },
+        { name: "Hanging Knee Raise", sets: "3x12" },
+      ]},
+      { day: "Wednesday", label: "Mobility", type: "mobility", exercises: [
+        { name: "KB Arm Bar", sets: "2x30s ea" },
+        { name: "Band Shoulder Pass-Through", sets: "2x10" },
+        { name: "World's Greatest Stretch", sets: "3x5 ea" },
+        { name: "KB Halo", sets: "2x8 ea" },
+        { name: "Dead Hang", sets: "3x60s" },
+        { name: "90/90 Hip Switch", sets: "3x8 ea" },
+      ]},
+      { day: "Thursday", label: "Pull Focus", type: "upper", exercises: [
+        { name: "Pull-Up", sets: "5x5-8" },
+        { name: "KB Gorilla Row", sets: "4x8 ea" },
+        { name: "Archer Pull-Up", sets: "3x3-4 ea" },
+        { name: "Ring Bicep Curl", sets: "3x10" },
+        { name: "Band Face Pull", sets: "3x15" },
+      ]},
+      { day: "Friday", label: "Swing + Power", type: "lower", exercises: [
+        { name: "KB Snatch", sets: "4x6 ea" },
+        { name: "KB Swing (heavy)", sets: "5x10" },
+        { name: "KB Step-Up", sets: "3x8 ea" },
+        { name: "Broad Jump", sets: "4x5" },
+        { name: "Toes to Bar", sets: "3x8" },
+      ]},
+      { day: "Saturday", label: "Active Recovery", type: "cardio", exercises: [
+        { name: "KB Swing (light)", sets: "3x15" },
+        { name: "Ring Row (Inverted Row)", sets: "2x10" },
+        { name: "Band Monster Walk", sets: "2x15 steps" },
+        { name: "Hollow Body Hold", sets: "3x20s" },
+      ]},
+      { day: "Sunday", label: "Rest", type: "rest", exercises: [
+        { name: "Walk, stretch, or light play", sets: "Enjoy it" },
+      ]},
+    ]
+  },
+
+  // ═══════════ CONDITIONING TEMPLATES ═══════════
+  {
+    title: "Conditioning Beast — Circuit Style",
+    cat: "conditioning",
+    desc: "High reps, short rest, heart rate up. Every strength day is a circuit. Mobility days are active recovery.",
+    days: [
+      { day: "Monday", label: "Upper Circuit", type: "upper", exercises: [
+        { name: "KB Push Press", sets: "4x8 ea" },
+        { name: "Pull-Up", sets: "4x max (leave 1-2 in tank)" },
+        { name: "Ring Push-Up", sets: "3x12-15" },
+        { name: "KB Gorilla Row", sets: "3x12 ea" },
+        { name: "Band Face Pull", sets: "3x20" },
+        { name: "Note: circuit — 60s rest between rounds", sets: "" },
+      ]},
+      { day: "Tuesday", label: "Lower AMRAP", type: "lower", exercises: [
+        { name: "KB Swing", sets: "15" },
+        { name: "KB Goblet Squat", sets: "10" },
+        { name: "KB Reverse Lunge", sets: "8 ea" },
+        { name: "Broad Jump", sets: "5" },
+        { name: "Note: AMRAP 20 min — as many rounds as possible", sets: "" },
+      ]},
+      { day: "Wednesday", label: "Mobility", type: "mobility", exercises: [
+        { name: "World's Greatest Stretch", sets: "3x5 ea" },
+        { name: "KB Halo", sets: "2x8 ea" },
+        { name: "90/90 Hip Switch", sets: "3x8 ea" },
+        { name: "Deep Squat Hold", sets: "3x45s" },
+        { name: "Dead Hang", sets: "3x45s" },
+        { name: "Band Dislocate", sets: "2x10" },
+      ]},
+      { day: "Thursday", label: "Upper EMOM", type: "upper", exercises: [
+        { name: "Min 1: Ring Dip", sets: "6-8" },
+        { name: "Min 2: Chin-Up", sets: "5-8" },
+        { name: "Min 3: KB Renegade Row", sets: "5 ea" },
+        { name: "Min 4: Ring Tricep Extension", sets: "10" },
+        { name: "Note: 5 rounds = 20 min EMOM", sets: "" },
+      ]},
+      { day: "Friday", label: "Lower Chipper", type: "lower", exercises: [
+        { name: "KB Swing", sets: "50 total" },
+        { name: "KB Goblet Squat", sets: "30 total" },
+        { name: "KB Single-Arm Swing", sets: "20 ea" },
+        { name: "KB Step-Up", sets: "15 ea" },
+        { name: "Hanging Leg Raise", sets: "20 total" },
+        { name: "Note: for time — break as needed", sets: "" },
+      ]},
+      { day: "Saturday", label: "Full-Body Blast", type: "cardio", exercises: [
+        { name: "KB Swing to Squat", sets: "5 rounds" },
+        { name: "Burpee", sets: "4x12" },
+        { name: "Ring Knee Tuck", sets: "3x12" },
+        { name: "Mountain Climber", sets: "3x30s" },
+        { name: "Bear Crawl", sets: "3x20m" },
+        { name: "KB Snatch", sets: "3x8 ea" },
+      ]},
+      { day: "Sunday", label: "Rest", type: "rest", exercises: [
+        { name: "Walk, stretch, or light play", sets: "Enjoy it" },
+      ]},
+    ]
+  },
+  {
+    title: "Swing & Snatch Conditioning",
+    cat: "conditioning",
+    desc: "Kettlebell-only conditioning. Ballistic work dominates. If your heart rate isn't up, go heavier.",
+    days: [
+      { day: "Monday", label: "Upper Ballistic + Grind", type: "upper", exercises: [
+        { name: "KB Clean", sets: "4x8 ea" },
+        { name: "KB Push Press", sets: "4x8 ea" },
+        { name: "KB Bent-Over Row", sets: "4x10 ea" },
+        { name: "Pull-Up", sets: "3xmax" },
+        { name: "Band Pull-Apart", sets: "3x20" },
+      ]},
+      { day: "Tuesday", label: "Swing Intervals", type: "lower", exercises: [
+        { name: "KB Swing", sets: "30s on / 30s off x 10" },
+        { name: "KB Goblet Squat", sets: "3x12" },
+        { name: "KB Lateral Lunge", sets: "3x8 ea" },
+        { name: "Band Monster Walk", sets: "3x15 ea" },
+        { name: "Hanging Knee Raise", sets: "3x15" },
+      ]},
+      { day: "Wednesday", label: "Mobility", type: "mobility", exercises: [
+        { name: "KB Turkish Get-Up", sets: "3x2 ea (light)" },
+        { name: "KB Windmill", sets: "2x5 ea" },
+        { name: "KB Arm Bar", sets: "2x30s ea" },
+        { name: "Deep Squat Hold", sets: "3x60s" },
+        { name: "Cat-Cow", sets: "2x10" },
+        { name: "Prone Y-T-W Raise", sets: "2x8 each" },
+      ]},
+      { day: "Thursday", label: "Snatch Day", type: "upper", exercises: [
+        { name: "KB Snatch", sets: "5x8 ea" },
+        { name: "Ring Row (Inverted Row)", sets: "4x12" },
+        { name: "KB Floor Press", sets: "3x10 ea" },
+        { name: "Ring Face Pull", sets: "3x15" },
+        { name: "KB Suitcase Carry", sets: "3x40m ea" },
+      ]},
+      { day: "Friday", label: "KB Complex Day", type: "lower", exercises: [
+        { name: "Clean + Squat + Press (per side)", sets: "5x(1+2+1) ea" },
+        { name: "KB Single-Arm Swing", sets: "4x12 ea" },
+        { name: "KB Single-Leg Deadlift", sets: "3x8 ea" },
+        { name: "Band Pallof Press", sets: "3x10 ea" },
+        { name: "Hollow Body Hold", sets: "3x30s" },
+      ]},
+      { day: "Saturday", label: "Snatch Test Prep", type: "cardio", exercises: [
+        { name: "KB Snatch (alternating)", sets: "10 min continuous" },
+        { name: "KB Swing", sets: "3x20" },
+        { name: "Burpee", sets: "3x10" },
+        { name: "Mountain Climber", sets: "3x30s" },
+      ]},
+      { day: "Sunday", label: "Rest", type: "rest", exercises: [
+        { name: "Walk, stretch, or light play", sets: "Enjoy it" },
+      ]},
+    ]
+  },
+  {
+    title: "EMOM Everything",
+    cat: "conditioning",
+    desc: "Every training day is built as an EMOM. Simple, repeatable, self-pacing. Just watch the clock.",
+    days: [
+      { day: "Monday", label: "Upper EMOM (24 min)", type: "upper", exercises: [
+        { name: "Min 1: KB Single-Arm Press", sets: "5 ea" },
+        { name: "Min 2: Pull-Up", sets: "5-8" },
+        { name: "Min 3: Ring Push-Up", sets: "8-10" },
+        { name: "Min 4: KB Gorilla Row", sets: "6 ea" },
+        { name: "Note: 6 rounds = 24 min", sets: "" },
+      ]},
+      { day: "Tuesday", label: "Lower EMOM (20 min)", type: "lower", exercises: [
+        { name: "Min 1: KB Swing", sets: "15" },
+        { name: "Min 2: KB Goblet Squat", sets: "8" },
+        { name: "Min 3: KB Single-Leg Deadlift", sets: "5 ea" },
+        { name: "Min 4: Jump Squat", sets: "8" },
+        { name: "Note: 5 rounds = 20 min", sets: "" },
+      ]},
+      { day: "Wednesday", label: "Mobility", type: "mobility", exercises: [
+        { name: "KB Halo", sets: "2x8 ea" },
+        { name: "World's Greatest Stretch", sets: "3x5 ea" },
+        { name: "Ring Skin the Cat", sets: "3x3" },
+        { name: "Band Shoulder Pass-Through", sets: "2x10" },
+        { name: "90/90 Hip Switch", sets: "3x8 ea" },
+        { name: "Dead Hang", sets: "3x45s" },
+      ]},
+      { day: "Thursday", label: "Upper EMOM (24 min)", type: "upper", exercises: [
+        { name: "Min 1: Ring Dip", sets: "5-8" },
+        { name: "Min 2: Chin-Up", sets: "5-8" },
+        { name: "Min 3: KB Bent-Over Row", sets: "8 ea" },
+        { name: "Min 4: Band Face Pull", sets: "15" },
+        { name: "Note: 6 rounds = 24 min", sets: "" },
+      ]},
+      { day: "Friday", label: "Lower EMOM (25 min)", type: "lower", exercises: [
+        { name: "Min 1: KB Snatch", sets: "5 ea" },
+        { name: "Min 2: KB Front Squat (Double)", sets: "5" },
+        { name: "Min 3: KB Swing", sets: "15" },
+        { name: "Min 4: KB Reverse Lunge", sets: "6 ea" },
+        { name: "Min 5: Hanging Leg Raise", sets: "10" },
+        { name: "Note: 5 rounds = 25 min", sets: "" },
+      ]},
+      { day: "Saturday", label: "Cardio EMOM (15 min)", type: "cardio", exercises: [
+        { name: "Min 1: KB Swing", sets: "12" },
+        { name: "Min 2: Burpee", sets: "8" },
+        { name: "Min 3: Ring Knee Tuck", sets: "10" },
+        { name: "Note: 5 rounds = 15 min", sets: "" },
+      ]},
+      { day: "Sunday", label: "Rest", type: "rest", exercises: [
+        { name: "Walk, stretch, or light play", sets: "Enjoy it" },
+      ]},
+    ]
+  },
+
+  // ═══════════ MIXED TEMPLATES ═══════════
+  {
+    title: "Balanced — Strength + Conditioning",
+    cat: "mixed",
+    desc: "Two heavy days, two circuit days, one mobility, one cardio. Best of both worlds for general fitness.",
+    days: [
+      { day: "Monday", label: "Upper Strength", type: "upper", exercises: [
+        { name: "KB Single-Arm Press", sets: "4x5-6 ea" },
+        { name: "Pull-Up", sets: "4x5-8" },
+        { name: "KB Gorilla Row", sets: "4x8-10 ea" },
+        { name: "Ring Push-Up", sets: "3x10-12" },
+        { name: "Band Face Pull", sets: "3x15" },
+        { name: "KB Suitcase Carry", sets: "3x40m ea" },
+      ]},
+      { day: "Tuesday", label: "Lower Circuit", type: "lower", exercises: [
+        { name: "KB Swing", sets: "15" },
+        { name: "KB Goblet Squat", sets: "10" },
+        { name: "KB Reverse Lunge", sets: "8 ea" },
+        { name: "Jump Squat", sets: "8" },
+        { name: "Hanging Knee Raise", sets: "12" },
+        { name: "Note: 4 rounds, 90s rest between", sets: "" },
+      ]},
+      { day: "Wednesday", label: "Mobility + Flow", type: "mobility", exercises: [
+        { name: "World's Greatest Stretch", sets: "3x5 ea" },
+        { name: "KB Halo", sets: "2x8 ea direction" },
+        { name: "KB Arm Bar", sets: "2x30s ea" },
+        { name: "Ring Skin the Cat", sets: "3x4" },
+        { name: "90/90 Hip Switch", sets: "3x8 ea" },
+        { name: "Deep Squat Hold", sets: "3x45s" },
+        { name: "Dead Hang", sets: "3x45s" },
+      ]},
+      { day: "Thursday", label: "Upper Circuit", type: "upper", exercises: [
+        { name: "Ring Dip", sets: "6-8" },
+        { name: "Chin-Up", sets: "6-8" },
+        { name: "KB Renegade Row", sets: "5 ea" },
+        { name: "Ring Tricep Extension", sets: "10" },
+        { name: "Band Pull-Apart", sets: "15" },
+        { name: "Note: 4 rounds, 60s rest between", sets: "" },
+      ]},
+      { day: "Friday", label: "Lower Strength", type: "lower", exercises: [
+        { name: "KB Front Squat (Double)", sets: "4x6-8" },
+        { name: "KB Romanian Deadlift (Double)", sets: "4x8" },
+        { name: "KB Single-Leg Deadlift", sets: "3x6 ea" },
+        { name: "KB Cossack Squat", sets: "3x6 ea" },
+        { name: "Toes to Bar", sets: "3x8" },
+      ]},
+      { day: "Saturday", label: "Cardio + Core", type: "cardio", exercises: [
+        { name: "KB Swing to Squat", sets: "5 rounds" },
+        { name: "Burpee", sets: "3x12" },
+        { name: "Bear Crawl", sets: "3x20m" },
+        { name: "Ring Body Saw", sets: "3x8" },
+        { name: "Hollow Body Hold", sets: "3x30s" },
+      ]},
+      { day: "Sunday", label: "Rest", type: "rest", exercises: [
+        { name: "Walk, stretch, or light play", sets: "Enjoy it" },
+      ]},
+    ]
+  },
+  {
+    title: "Equipment Rotation — Daily Variety",
+    cat: "mixed",
+    desc: "Each day uses a different primary tool. Keeps things fresh, hits everything across the week.",
+    days: [
+      { day: "Monday", label: "Kettlebell Day", type: "upper", exercises: [
+        { name: "KB Single-Arm Press", sets: "4x5 ea" },
+        { name: "KB Gorilla Row", sets: "4x8 ea" },
+        { name: "KB Floor Press", sets: "3x8 ea" },
+        { name: "KB Bent-Over Row", sets: "3x10 ea" },
+        { name: "KB Turkish Get-Up", sets: "2x2 ea" },
+      ]},
+      { day: "Tuesday", label: "Bar + Band Lower", type: "lower", exercises: [
+        { name: "KB Goblet Squat", sets: "4x10" },
+        { name: "KB Swing", sets: "5x15" },
+        { name: "Band Good Morning", sets: "3x12" },
+        { name: "KB Lateral Lunge", sets: "3x8 ea" },
+        { name: "Band Hip Thrust", sets: "3x15" },
+        { name: "Hanging Leg Raise", sets: "3x10" },
+      ]},
+      { day: "Wednesday", label: "Mobility", type: "mobility", exercises: [
+        { name: "KB Windmill", sets: "3x5 ea" },
+        { name: "Ring Skin the Cat", sets: "3x4" },
+        { name: "Band Dislocate", sets: "2x10" },
+        { name: "World's Greatest Stretch", sets: "3x5 ea" },
+        { name: "Deep Squat Hold", sets: "3x60s" },
+        { name: "Dead Hang", sets: "3x60s" },
+      ]},
+      { day: "Thursday", label: "Rings Day", type: "upper", exercises: [
+        { name: "Ring Dip", sets: "4x6-8" },
+        { name: "Ring Row (Inverted Row)", sets: "4x10-12" },
+        { name: "Ring Push-Up", sets: "3x10" },
+        { name: "Ring Face Pull", sets: "3x12" },
+        { name: "Ring Bicep Curl", sets: "3x10" },
+        { name: "Ring Plank", sets: "3x30s" },
+      ]},
+      { day: "Friday", label: "KB Power Lower", type: "lower", exercises: [
+        { name: "KB Snatch", sets: "4x6 ea" },
+        { name: "KB Front Squat (Double)", sets: "4x6" },
+        { name: "KB Single-Leg Deadlift", sets: "3x8 ea" },
+        { name: "Broad Jump", sets: "4x5" },
+        { name: "Band Pallof Press", sets: "3x10 ea" },
+      ]},
+      { day: "Saturday", label: "Pull-Up Bar + Cardio", type: "cardio", exercises: [
+        { name: "Pull-Up", sets: "3xmax" },
+        { name: "KB Swing", sets: "5x20" },
+        { name: "Burpee", sets: "3x10" },
+        { name: "Mountain Climber", sets: "3x30s" },
+        { name: "Hanging Windshield Wiper", sets: "3x5 ea" },
+      ]},
+      { day: "Sunday", label: "Rest", type: "rest", exercises: [
+        { name: "Walk, stretch, or light play", sets: "Enjoy it" },
+      ]},
+    ]
+  },
+  {
+    title: "Push / Pull / Legs — Classic Split",
+    cat: "mixed",
+    desc: "Traditional bodybuilding split adapted for your garage equipment. Clear muscle group separation.",
+    days: [
+      { day: "Monday", label: "Push", type: "upper", exercises: [
+        { name: "KB Single-Arm Press", sets: "4x6 ea" },
+        { name: "Ring Dip", sets: "4x6-10" },
+        { name: "Ring Push-Up", sets: "3x12" },
+        { name: "Ring Pike Push-Up", sets: "3x8" },
+        { name: "Band Chest Press", sets: "3x15" },
+        { name: "Ring Tricep Extension", sets: "3x10" },
+      ]},
+      { day: "Tuesday", label: "Pull", type: "upper", exercises: [
+        { name: "Pull-Up", sets: "4x5-8" },
+        { name: "KB Gorilla Row", sets: "4x8 ea" },
+        { name: "Ring Row (Inverted Row)", sets: "3x12" },
+        { name: "Ring Face Pull", sets: "3x15" },
+        { name: "Ring Bicep Curl", sets: "3x10" },
+        { name: "Band Lat Pulldown", sets: "3x12" },
+      ]},
+      { day: "Wednesday", label: "Legs", type: "lower", exercises: [
+        { name: "KB Front Squat (Double)", sets: "4x6-8" },
+        { name: "KB Romanian Deadlift (Double)", sets: "4x8" },
+        { name: "KB Reverse Lunge", sets: "3x10 ea" },
+        { name: "KB Swing", sets: "4x15" },
+        { name: "KB Cossack Squat", sets: "3x6 ea" },
+        { name: "Band Hip Thrust", sets: "3x15" },
+      ]},
+      { day: "Thursday", label: "Push (Volume)", type: "upper", exercises: [
+        { name: "KB Push Press", sets: "4x8 ea" },
+        { name: "Ring Push-Up", sets: "4x12-15" },
+        { name: "KB Floor Press", sets: "3x10 ea" },
+        { name: "Band Overhead Press", sets: "3x15" },
+        { name: "Band Tricep Pushdown", sets: "3x15" },
+      ]},
+      { day: "Friday", label: "Pull (Volume)", type: "upper", exercises: [
+        { name: "Chin-Up", sets: "4x6-10" },
+        { name: "KB Bent-Over Row", sets: "4x10 ea" },
+        { name: "Ring Archer Row", sets: "3x5 ea" },
+        { name: "Band Face Pull", sets: "3x20" },
+        { name: "Band Bicep Curl", sets: "3x15" },
+      ]},
+      { day: "Saturday", label: "Legs + Conditioning", type: "cardio", exercises: [
+        { name: "KB Snatch", sets: "4x8 ea" },
+        { name: "KB Goblet Squat", sets: "3x12" },
+        { name: "KB Single-Arm Swing", sets: "3x12 ea" },
+        { name: "Jump Squat", sets: "3x10" },
+        { name: "Hanging Leg Raise", sets: "3x10" },
+      ]},
+      { day: "Sunday", label: "Rest", type: "rest", exercises: [
+        { name: "Walk, stretch, or light play", sets: "Enjoy it" },
+      ]},
+    ]
+  },
+
+  // ═══════════ EASY / DELOAD TEMPLATES ═══════════
+  {
+    title: "Deload Week — Active Recovery",
+    cat: "easy",
+    desc: "Half the volume, half the intensity. Use after 3-4 hard weeks. Keep moving, let the body recover.",
+    days: [
+      { day: "Monday", label: "Light Upper", type: "upper", exercises: [
+        { name: "KB Single-Arm Press (light)", sets: "3x5 ea" },
+        { name: "Ring Row (Inverted Row)", sets: "3x8" },
+        { name: "Band Pull-Apart", sets: "3x15" },
+        { name: "Band Face Pull", sets: "2x12" },
+      ]},
+      { day: "Tuesday", label: "Light Lower", type: "lower", exercises: [
+        { name: "KB Goblet Squat (light)", sets: "3x8" },
+        { name: "KB Swing (light)", sets: "3x12" },
+        { name: "KB Reverse Lunge (bodyweight)", sets: "2x8 ea" },
+        { name: "Band Monster Walk", sets: "2x15 steps" },
+      ]},
+      { day: "Wednesday", label: "Mobility", type: "mobility", exercises: [
+        { name: "World's Greatest Stretch", sets: "3x5 ea" },
+        { name: "KB Halo (light)", sets: "2x8 ea" },
+        { name: "90/90 Hip Switch", sets: "3x8 ea" },
+        { name: "Deep Squat Hold", sets: "3x60s" },
+        { name: "Cat-Cow", sets: "3x10" },
+        { name: "Dead Hang", sets: "3x45s" },
+      ]},
+      { day: "Thursday", label: "Light Upper", type: "upper", exercises: [
+        { name: "Ring Push-Up", sets: "3x8" },
+        { name: "Chin-Up", sets: "3x5" },
+        { name: "Band Bicep Curl", sets: "2x12" },
+        { name: "Band Tricep Pushdown", sets: "2x12" },
+      ]},
+      { day: "Friday", label: "Mobility + Core", type: "mobility", exercises: [
+        { name: "KB Arm Bar", sets: "2x30s ea" },
+        { name: "KB Windmill (light)", sets: "2x5 ea" },
+        { name: "Ring Skin the Cat", sets: "3x3" },
+        { name: "Hollow Body Hold", sets: "3x20s" },
+        { name: "Band Pallof Press", sets: "2x8 ea" },
+        { name: "Prone Y-T-W Raise", sets: "2x8 each" },
+      ]},
+      { day: "Saturday", label: "Easy Movement", type: "cardio", exercises: [
+        { name: "KB Swing (light)", sets: "3x10" },
+        { name: "Bear Crawl", sets: "2x15m" },
+        { name: "Band External Rotation", sets: "2x12 ea" },
+        { name: "Arch Hold (Superman)", sets: "3x15s" },
+      ]},
+      { day: "Sunday", label: "Rest", type: "rest", exercises: [
+        { name: "Walk, stretch, or light play", sets: "Enjoy it" },
+      ]},
+    ]
+  },
+  {
+    title: "Mobility Focus Week",
+    cat: "easy",
+    desc: "For when your body is beat up. Three pure mobility days, two light strength, one gentle cardio. Lots of stretching.",
+    days: [
+      { day: "Monday", label: "Light Strength + Mobility", type: "upper", exercises: [
+        { name: "KB Halo", sets: "2x8 ea" },
+        { name: "KB Single-Arm Press (light)", sets: "3x5 ea" },
+        { name: "Ring Row (Inverted Row)", sets: "3x8" },
+        { name: "KB Arm Bar", sets: "2x30s ea" },
+        { name: "Dead Hang", sets: "3x30s" },
+      ]},
+      { day: "Tuesday", label: "Hip + Spine Mobility", type: "mobility", exercises: [
+        { name: "World's Greatest Stretch", sets: "3x5 ea" },
+        { name: "90/90 Hip Switch", sets: "3x10 ea" },
+        { name: "Deep Squat Hold", sets: "3x60s" },
+        { name: "KB Cossack Squat (light)", sets: "3x5 ea" },
+        { name: "Cat-Cow", sets: "3x10" },
+      ]},
+      { day: "Wednesday", label: "Shoulder + T-Spine", type: "mobility", exercises: [
+        { name: "Band Dislocate", sets: "3x10" },
+        { name: "Band Shoulder Pass-Through", sets: "2x10" },
+        { name: "Ring Skin the Cat", sets: "3x3" },
+        { name: "KB Windmill (light)", sets: "3x5 ea" },
+        { name: "Band External Rotation", sets: "2x15 ea" },
+        { name: "Prone Y-T-W Raise", sets: "2x8 each" },
+      ]},
+      { day: "Thursday", label: "Light Strength + Core", type: "lower", exercises: [
+        { name: "KB Goblet Squat (light)", sets: "3x8" },
+        { name: "KB Swing (light)", sets: "3x12" },
+        { name: "Band Monster Walk", sets: "2x15 steps" },
+        { name: "Hollow Body Hold", sets: "3x20s" },
+        { name: "Band Pallof Press", sets: "2x8 ea" },
+      ]},
+      { day: "Friday", label: "Full Body Mobility", type: "mobility", exercises: [
+        { name: "KB Turkish Get-Up (light)", sets: "3x1 ea" },
+        { name: "KB Arm Bar", sets: "2x30s ea" },
+        { name: "KB Halo", sets: "2x8 ea" },
+        { name: "Deep Squat Hold", sets: "2x60s" },
+        { name: "Dead Hang", sets: "3x60s" },
+        { name: "World's Greatest Stretch", sets: "2x5 ea" },
+      ]},
+      { day: "Saturday", label: "Easy Flow", type: "cardio", exercises: [
+        { name: "Bear Crawl", sets: "3x15m" },
+        { name: "KB Swing (very light)", sets: "3x10" },
+        { name: "Arch Hold (Superman)", sets: "3x15s" },
+        { name: "Mountain Climber (slow)", sets: "2x20s" },
+      ]},
+      { day: "Sunday", label: "Rest", type: "rest", exercises: [
+        { name: "Walk, stretch, or light play", sets: "Enjoy it" },
+      ]},
+    ]
+  },
+];
+
+// ============================================================
+// COMPLEXES & FLOWS DATABASE
+// ============================================================
+const complexes = [
+  // ── KETTLEBELL COMPLEXES ─────────────────────────────────────
+  {
+    name: "The Armor Building Complex",
+    equip: "kettlebell", goal: "strength", diff: "intermediate",
+    desc: "A classic Dan John complex. Two kettlebells, no rest between movements. Builds pressing strength, legs, and serious work capacity.",
+    steps: [
+      { move: "Double KB Clean", reps: "2" },
+      { move: "Double KB Press", reps: "1" },
+      { move: "Double KB Front Squat", reps: "3" },
+    ],
+    protocol: "5-8 rounds, 90-120s rest between rounds",
+    duration: "~18 min"
+  },
+  {
+    name: "The Wolf",
+    equip: "kettlebell", goal: "conditioning", diff: "advanced",
+    desc: "Geoff Neupert's famous double KB complex. Ascending ladder: round 1 = 1 rep each, round 2 = 2 reps, etc. Chase a rep PR each session.",
+    steps: [
+      { move: "Double KB Clean", reps: "ladder" },
+      { move: "Double KB Front Squat", reps: "ladder" },
+      { move: "Double KB Press", reps: "ladder" },
+    ],
+    protocol: "Ladder 1-2-3-4-5, rest as needed. 30 min cap.",
+    duration: "~25-30 min"
+  },
+  {
+    name: "KB Long Cycle",
+    equip: "kettlebell", goal: "conditioning", diff: "advanced",
+    desc: "Competition-style clean & jerk. Continuous reps for time. One of the most demanding kettlebell protocols.",
+    steps: [
+      { move: "KB Clean", reps: "1" },
+      { move: "KB Push Press or Jerk", reps: "1" },
+      { move: "Lower to swing, repeat", reps: "continuous" },
+    ],
+    protocol: "Single arm: 3 min on / 1 min rest x 4-6 sets. Switch sides each set.",
+    duration: "~20-25 min"
+  },
+  {
+    name: "Swing → Clean → Press → Squat",
+    equip: "kettlebell", goal: "strength", diff: "intermediate",
+    desc: "The four fundamental KB patterns chained together. Each rep flows into the next without putting the bell down.",
+    steps: [
+      { move: "Single-Arm Swing", reps: "1" },
+      { move: "Clean to Rack", reps: "1" },
+      { move: "Strict Press", reps: "1" },
+      { move: "Lower to Rack, Front Squat", reps: "1" },
+    ],
+    protocol: "5 reps per side = 1 round. 5 rounds, 60-90s rest.",
+    duration: "~15 min"
+  },
+  {
+    name: "KB Snatch Test Protocol",
+    equip: "kettlebell", goal: "conditioning", diff: "advanced",
+    desc: "Work towards the RKC snatch test standard. Build grip endurance and explosive hip power under fatigue.",
+    steps: [
+      { move: "KB Snatch (right)", reps: "10" },
+      { move: "KB Snatch (left)", reps: "10" },
+    ],
+    protocol: "100 reps in 5 min goal. Start with 5x(10R+10L) with rest, compress rest over weeks.",
+    duration: "5-10 min"
+  },
+  {
+    name: "Clean → Squat → Press Chain",
+    equip: "kettlebell", goal: "strength", diff: "intermediate",
+    desc: "Heavy grind complex. Use a bell 1-2 sizes heavier than your press weight to build into it.",
+    steps: [
+      { move: "Double KB Clean", reps: "1" },
+      { move: "Double KB Front Squat", reps: "2" },
+      { move: "Double KB Clean", reps: "1" },
+      { move: "Double KB Press", reps: "2" },
+    ],
+    protocol: "6 rounds, 2 min rest. Stay heavy.",
+    duration: "~20 min"
+  },
+  {
+    name: "KB Swing Ladder",
+    equip: "kettlebell", goal: "conditioning", diff: "beginner",
+    desc: "Simple but devastating. Ascending-descending swing ladder. Great entry point into complex training.",
+    steps: [
+      { move: "Two-Hand Swing", reps: "10" },
+      { move: "Rest (breaths = reps)", reps: "10 breaths" },
+      { move: "Two-Hand Swing", reps: "15" },
+      { move: "Rest", reps: "15 breaths" },
+      { move: "Two-Hand Swing", reps: "20" },
+      { move: "Descend: 15, 10", reps: "back down" },
+    ],
+    protocol: "2-3 full pyramids. Talk test between sets.",
+    duration: "~12-18 min"
+  },
+  {
+    name: "KB Flow: Halo → Goblet → Swing",
+    equip: "kettlebell", goal: "mobility", diff: "beginner",
+    desc: "A warm-up flow that prepares shoulders, hips, and posterior chain. Smooth transitions, no rushing.",
+    steps: [
+      { move: "KB Halo", reps: "5 each way" },
+      { move: "Goblet Squat (pause at bottom)", reps: "5" },
+      { move: "Two-Hand Swing", reps: "10" },
+    ],
+    protocol: "3 rounds, continuous. Use a light-moderate bell.",
+    duration: "~8 min"
+  },
+  {
+    name: "Dead Snatch → Windmill → Reverse Lunge",
+    equip: "kettlebell", goal: "strength", diff: "advanced",
+    desc: "Overhead stability complex. The bell stays up for the whole chain. Tests shoulder endurance and total-body control.",
+    steps: [
+      { move: "Dead Snatch (from floor)", reps: "1" },
+      { move: "Overhead Windmill", reps: "2" },
+      { move: "Overhead Reverse Lunge", reps: "3 each leg" },
+    ],
+    protocol: "3-4 rounds each side, 90s rest between sides.",
+    duration: "~15 min"
+  },
+  {
+    name: "KB Carry Complex",
+    equip: "kettlebell", goal: "strength", diff: "intermediate",
+    desc: "Loaded carries in three positions. Builds grip, core, and mental toughness. Walk in a straight line, don't rush.",
+    steps: [
+      { move: "Suitcase Carry (1 KB)", reps: "40m" },
+      { move: "Rack Carry (1 KB)", reps: "40m" },
+      { move: "Waiter Carry (1 KB, bottoms-up)", reps: "40m" },
+      { move: "Switch sides, repeat", reps: "—" },
+    ],
+    protocol: "3 rounds (both sides = 1 round). Rest 60s between rounds.",
+    duration: "~15 min"
+  },
+
+  // ── RING COMPLEXES ───────────────────────────────────────────
+  {
+    name: "Ring Push-Pull Superset",
+    equip: "rings", goal: "strength", diff: "intermediate",
+    desc: "Alternate push and pull with no rest between the pair. Balanced upper body development and solid time efficiency.",
+    steps: [
+      { move: "Ring Push-Up", reps: "8-12" },
+      { move: "Ring Row", reps: "8-12" },
+    ],
+    protocol: "5 supersets, 90s rest between pairs.",
+    duration: "~15 min"
+  },
+  {
+    name: "Ring Upper Body Grind",
+    equip: "rings", goal: "strength", diff: "advanced",
+    desc: "Four movements, descending reps. Tests pressing, pulling, and core on the rings in one continuous block.",
+    steps: [
+      { move: "Ring Dip", reps: "5" },
+      { move: "Ring Row (feet elevated)", reps: "8" },
+      { move: "Ring Push-Up", reps: "10" },
+      { move: "Ring Face Pull", reps: "12" },
+    ],
+    protocol: "4 rounds, 2 min rest. Maintain form as fatigue builds.",
+    duration: "~20 min"
+  },
+  {
+    name: "Ring Muscle-Up Complex",
+    equip: "rings", goal: "power", diff: "advanced",
+    desc: "Full transition complex. Each rep is a muscle-up followed by a dip and a slow negative. Quality over quantity.",
+    steps: [
+      { move: "Ring Muscle-Up", reps: "1" },
+      { move: "Ring Dip (pause at top)", reps: "1" },
+      { move: "Slow Negative (5s descent)", reps: "1" },
+    ],
+    protocol: "5 sets of 2-3 complexes. Full rest between sets (2-3 min).",
+    duration: "~18 min"
+  },
+  {
+    name: "Ring Core Flow",
+    equip: "rings", goal: "strength", diff: "intermediate",
+    desc: "Three ring core movements back to back. The instability makes each one significantly harder than its floor version.",
+    steps: [
+      { move: "Ring Plank Hold", reps: "20s" },
+      { move: "Ring Body Saw", reps: "8" },
+      { move: "Ring Knee Tuck", reps: "10" },
+    ],
+    protocol: "4 rounds, 60s rest. Keep hips level throughout.",
+    duration: "~12 min"
+  },
+  {
+    name: "Ring Skin the Cat Flow",
+    equip: "rings", goal: "mobility", diff: "intermediate",
+    desc: "Deep shoulder mobility under load. Progress from partial range to full german hang over weeks.",
+    steps: [
+      { move: "Active Hang (on rings)", reps: "10s" },
+      { move: "Inverted Hang (tuck)", reps: "5s" },
+      { move: "Skin the Cat (slow)", reps: "1" },
+      { move: "German Hang Hold", reps: "5-10s" },
+      { move: "Return to start", reps: "controlled" },
+    ],
+    protocol: "5 sets, 90s rest. Never force the stretch.",
+    duration: "~10 min"
+  },
+
+  // ── PULL-UP BAR COMPLEXES ────────────────────────────────────
+  {
+    name: "Pull-Up Pyramid",
+    equip: "pullup bar", goal: "strength", diff: "intermediate",
+    desc: "Ascending-descending ladder. 1-2-3-4-5-4-3-2-1. Total: 25 reps. Rest matches the reps you just did.",
+    steps: [
+      { move: "Pull-Up", reps: "1, rest" },
+      { move: "Pull-Up", reps: "2, rest" },
+      { move: "Pull-Up", reps: "...up to 5" },
+      { move: "Pull-Up", reps: "...back down to 1" },
+    ],
+    protocol: "1 full pyramid = 25 reps. Do 1-2 pyramids. Rest (seconds) = reps just completed x 5.",
+    duration: "~12-20 min"
+  },
+  {
+    name: "Bar Hang + Raise Complex",
+    equip: "pullup bar", goal: "strength", diff: "intermediate",
+    desc: "Decompression meets core work. The dead hang resets your grip before each core effort.",
+    steps: [
+      { move: "Dead Hang", reps: "15s" },
+      { move: "Hanging Knee Raise", reps: "8" },
+      { move: "Dead Hang", reps: "15s" },
+      { move: "Hanging Leg Raise", reps: "6" },
+    ],
+    protocol: "4 rounds, 60s rest between rounds.",
+    duration: "~12 min"
+  },
+  {
+    name: "Grip Gauntlet",
+    equip: "pullup bar", goal: "strength", diff: "advanced",
+    desc: "Three grip positions, no coming off the bar between them. When your grip gives out, rest and go again.",
+    steps: [
+      { move: "Wide-Grip Pull-Up", reps: "3-5" },
+      { move: "Shoulder-Width Pull-Up", reps: "max" },
+      { move: "Close-Grip Chin-Up", reps: "max" },
+    ],
+    protocol: "3-4 sets, 3 min rest. Track total reps across sets.",
+    duration: "~15 min"
+  },
+
+  // ── BAND COMPLEXES ───────────────────────────────────────────
+  {
+    name: "Band Shoulder Prep Flow",
+    equip: "band", goal: "mobility", diff: "beginner",
+    desc: "The go-to warm-up before any pressing day. Hits all rotator cuff actions and opens the thoracic spine.",
+    steps: [
+      { move: "Band Dislocate", reps: "10" },
+      { move: "Band Pull-Apart", reps: "15" },
+      { move: "Band External Rotation", reps: "10 each" },
+      { move: "Band Face Pull", reps: "12" },
+    ],
+    protocol: "2 rounds, continuous. Light band, focus on activation.",
+    duration: "~6 min"
+  },
+  {
+    name: "Band Burnout Finisher",
+    equip: "band", goal: "conditioning", diff: "beginner",
+    desc: "High-rep band work to finish an upper body day. Pump blood into the muscles and chase a burn.",
+    steps: [
+      { move: "Band Chest Press", reps: "20" },
+      { move: "Band Pull-Apart", reps: "20" },
+      { move: "Band Bicep Curl", reps: "15" },
+      { move: "Band Tricep Pushdown", reps: "15" },
+    ],
+    protocol: "3 rounds, no rest between movements. 30s rest between rounds.",
+    duration: "~8 min"
+  },
+  {
+    name: "Band Lower Body Activation",
+    equip: "band", goal: "mobility", diff: "beginner",
+    desc: "Pre-workout hip and glute activation. Wakes up the stabilisers before squats or deadlifts.",
+    steps: [
+      { move: "Band Monster Walk (forward)", reps: "15 steps" },
+      { move: "Band Monster Walk (lateral)", reps: "15 steps each" },
+      { move: "Band Hip Thrust", reps: "15" },
+      { move: "Band Good Morning", reps: "12" },
+    ],
+    protocol: "2 rounds, continuous flow.",
+    duration: "~6 min"
+  },
+
+  // ── MIXED EQUIPMENT COMPLEXES ────────────────────────────────
+  {
+    name: "The Meat & Potatoes",
+    equip: "mixed", goal: "strength", diff: "intermediate",
+    desc: "KB lower body paired with bar upper body. The two strongest tools in your garage gym, combined.",
+    steps: [
+      { move: "KB Swing", reps: "15" },
+      { move: "Pull-Up", reps: "5" },
+      { move: "KB Goblet Squat", reps: "10" },
+      { move: "Ring Push-Up", reps: "10" },
+    ],
+    protocol: "5 rounds, 90s rest. Go heavier on the KB each week.",
+    duration: "~20 min"
+  },
+  {
+    name: "The Full Toolbox",
+    equip: "mixed", goal: "conditioning", diff: "intermediate",
+    desc: "Every piece of equipment in one circuit. 30s work / 15s transition. Tests everything.",
+    steps: [
+      { move: "KB Swing", reps: "30s" },
+      { move: "Ring Row", reps: "30s" },
+      { move: "Band Squat", reps: "30s" },
+      { move: "Pull-Up (or Chin-Up)", reps: "30s" },
+      { move: "KB Goblet Squat", reps: "30s" },
+      { move: "Ring Push-Up", reps: "30s" },
+    ],
+    protocol: "4-5 rounds, 90s rest between rounds.",
+    duration: "~22 min"
+  },
+  {
+    name: "KB + Ring Strength Pairing",
+    equip: "mixed", goal: "strength", diff: "advanced",
+    desc: "Heavy KB grinds supersetted with ring gymnastics. Push-pull balance with a strength bias.",
+    steps: [
+      { move: "Double KB Clean & Press", reps: "3" },
+      { move: "Ring Archer Row", reps: "4 each" },
+      { move: "KB Front Squat (Double)", reps: "5" },
+      { move: "Ring Dip", reps: "5" },
+    ],
+    protocol: "5 rounds, 2 min rest. Heavy bells, controlled ring work.",
+    duration: "~25 min"
+  },
+  {
+    name: "Conditioning Chipper",
+    equip: "mixed", goal: "conditioning", diff: "intermediate",
+    desc: "Work through the entire list once, for time. A chipper — chip away at each movement before moving on.",
+    steps: [
+      { move: "KB Swing", reps: "30" },
+      { move: "Ring Push-Up", reps: "20" },
+      { move: "Pull-Up", reps: "15" },
+      { move: "KB Goblet Squat", reps: "20" },
+      { move: "Ring Row", reps: "20" },
+      { move: "KB Snatch (total)", reps: "20" },
+      { move: "Hanging Leg Raise", reps: "15" },
+    ],
+    protocol: "For time. Break up reps as needed. Record your time.",
+    duration: "~15-25 min"
+  },
+  {
+    name: "EMOM: Swing, Press, Pull",
+    equip: "mixed", goal: "conditioning", diff: "intermediate",
+    desc: "Every Minute On the Minute. One movement per minute, rotating. Stay crisp — if form breaks, reduce reps.",
+    steps: [
+      { move: "Min 1: KB Swing", reps: "12" },
+      { move: "Min 2: Ring Dip (or Push-Up)", reps: "6-8" },
+      { move: "Min 3: Pull-Up", reps: "5-6" },
+    ],
+    protocol: "Rotate for 15-21 min (5-7 rounds of 3). Rest is whatever's left in the minute.",
+    duration: "15-21 min"
+  },
+  {
+    name: "KB + Band Mobility Flow",
+    equip: "mixed", goal: "mobility", diff: "beginner",
+    desc: "Active recovery day flow. Light KB work for joint loading, bands for activation. Move slowly and breathe.",
+    steps: [
+      { move: "KB Halo", reps: "8 each way" },
+      { move: "Band Dislocate", reps: "10" },
+      { move: "KB Cossack Squat (light)", reps: "5 each" },
+      { move: "Band Pull-Apart", reps: "15" },
+      { move: "KB Arm Bar", reps: "30s each" },
+      { move: "Deep Squat Hold", reps: "45s" },
+    ],
+    protocol: "3 rounds, no clock. Rest as desired.",
+    duration: "~15-20 min"
+  },
+
+  // ── VIRAL / MAINSTREAM COMPLEXES ──────────────────────────────
+  {
+    name: "Eric Leija Primal Flow",
+    equip: "kettlebell", goal: "conditioning", diff: "intermediate",
+    desc: "Inspired by @ericleija's Onnit flows. Continuous movement, no pauses. The transitions matter as much as the lifts. Millions of views on Instagram.",
+    steps: [
+      { move: "KB Swing", reps: "2" },
+      { move: "KB Clean (right)", reps: "1" },
+      { move: "KB Front Squat (right)", reps: "1" },
+      { move: "KB Press (right)", reps: "1" },
+      { move: "KB Windmill (right)", reps: "1" },
+      { move: "Lower to swing, repeat left", reps: "mirror" },
+    ],
+    protocol: "5 full flows (both sides = 1). Rest 60s between flows.",
+    duration: "~15 min"
+  },
+  {
+    name: "Mark Wildman Nerd Math — Clean & Press Ladder",
+    equip: "kettlebell", goal: "strength", diff: "intermediate",
+    desc: "From Wildman Athletica's YouTube series (millions of views). Ascending ladder of clean & press. Track total volume and add a rung each week.",
+    steps: [
+      { move: "KB Clean & Press (left)", reps: "1" },
+      { move: "KB Clean & Press (right)", reps: "1" },
+      { move: "KB Clean & Press (left)", reps: "2" },
+      { move: "KB Clean & Press (right)", reps: "2" },
+      { move: "Continue up to 5 rungs", reps: "3, 4, 5..." },
+    ],
+    protocol: "1-2-3-4-5 ladder = 1 set. Do 3-5 sets. Rest 1-2 min between sets.",
+    duration: "~20-25 min"
+  },
+  {
+    name: "Dan John's 10,000 Swing Challenge (Daily Session)",
+    equip: "kettlebell", goal: "conditioning", diff: "advanced",
+    desc: "The most famous KB program on the internet. 500 swings per session, 5 days/week, 4 weeks = 10,000. Clusters of 10-15-25-50 with a strength move between.",
+    steps: [
+      { move: "KB Swing", reps: "10" },
+      { move: "Strength move (press, squat, or row)", reps: "1-3" },
+      { move: "KB Swing", reps: "15" },
+      { move: "Strength move", reps: "1-3" },
+      { move: "KB Swing", reps: "25" },
+      { move: "Strength move", reps: "1-3" },
+      { move: "KB Swing", reps: "50" },
+    ],
+    protocol: "That's 1 round (100 swings). Do 5 rounds = 500 swings. Rest as needed.",
+    duration: "~30-40 min"
+  },
+  {
+    name: "Simple & Sinister (Daily Practice)",
+    equip: "kettlebell", goal: "strength", diff: "intermediate",
+    desc: "Pavel Tsatsouline's minimalist program. The most recommended KB program across Reddit, YouTube, and StrongFirst. Just two moves, every day.",
+    steps: [
+      { move: "KB Swing (one-arm)", reps: "10 L + 10 R" },
+      { move: "Repeat swings", reps: "x5 sets (100 total)" },
+      { move: "KB Turkish Get-Up", reps: "1 L + 1 R" },
+      { move: "Repeat TGU", reps: "x5 sets (10 total)" },
+    ],
+    protocol: "Swings: 100 total in ~5 min. TGU: 10 total, rest as needed. Daily.",
+    duration: "~20-30 min"
+  },
+  {
+    name: "The Rite of Passage — Clean & Press + Pull-Up",
+    equip: "mixed", goal: "strength", diff: "intermediate",
+    desc: "From Pavel's Enter the Kettlebell. One of the most proven KB strength programs ever written. Paired with pull-ups for balance.",
+    steps: [
+      { move: "KB Clean & Press (left)", reps: "ladder rung" },
+      { move: "Pull-Up", reps: "match the rung" },
+      { move: "KB Clean & Press (right)", reps: "ladder rung" },
+      { move: "Pull-Up", reps: "match the rung" },
+    ],
+    protocol: "Ladders 1-2-3 (beginner) up to 1-2-3-4-5 (advanced). 5 ladders per session. 3x/week.",
+    duration: "~25-35 min"
+  },
+  {
+    name: "Obi Vincent Full-Body KB (1M+ YouTube Views)",
+    equip: "kettlebell", goal: "conditioning", diff: "intermediate",
+    desc: "Adapted from Obi Vincent's viral YouTube workout. 10-min EMOM then 10-min AMRAP. Simple, brutal, effective.",
+    steps: [
+      { move: "Part 1 EMOM — KB Clean & Press", reps: "5 ea / min" },
+      { move: "EMOM — KB Swing", reps: "10 / min (alt. mins)" },
+      { move: "Part 2 AMRAP — KB Goblet Squat", reps: "10" },
+      { move: "AMRAP — KB Row", reps: "8 ea" },
+      { move: "AMRAP — KB Swing", reps: "15" },
+    ],
+    protocol: "10 min EMOM (alternating moves) + 10 min AMRAP (cycle through). No other rest.",
+    duration: "~20 min"
+  },
+  {
+    name: "Dry Fighting Weight (Geoff Neupert)",
+    equip: "kettlebell", goal: "strength", diff: "intermediate",
+    desc: "Neupert's famous double KB program shared across every KB forum. 3 days/week, 30 min sessions. Alternating ladders of cleans & presses + front squats.",
+    steps: [
+      { move: "Double KB Clean & Press", reps: "ladder 1-2-3" },
+      { move: "Double KB Front Squat", reps: "ladder 1-2-3" },
+    ],
+    protocol: "Day A: 5 ladders of C&P (1-2-3). Day B: 5 ladders of FSQ (1-2-3). Alternate. 3x/week.",
+    duration: "~30 min"
+  },
+  {
+    name: "Total Tension Complex (Pat Flynn / Chronicles of Strength)",
+    equip: "kettlebell", goal: "strength", diff: "intermediate",
+    desc: "Popular YouTube complex from Pat Flynn. Maximum muscle tension, minimum reps. Heavy bell, slow and controlled.",
+    steps: [
+      { move: "Double KB Dead Clean", reps: "1" },
+      { move: "Double KB Front Squat", reps: "1" },
+      { move: "Double KB Press", reps: "1" },
+      { move: "Double KB Row", reps: "1" },
+    ],
+    protocol: "1 rep each, 8-10 rounds, 90s rest. Sounds easy — it's not.",
+    duration: "~20 min"
+  },
+];
+
+// ============================================================
+// RENDERING
+// ============================================================
+const grid = document.getElementById('exerciseGrid');
+const noResults = document.getElementById('noResults');
+const statBar = document.getElementById('statBar');
+const searchBox = document.getElementById('searchBox');
+
+let activeFilters = { equip: 'all', split: 'all', type: 'all' };
+
+function renderExercises() {
+  const query = searchBox.value.toLowerCase();
+  const filtered = exercises.filter(ex => {
+    const matchEquip = activeFilters.equip === 'all' || ex.equip.includes(activeFilters.equip);
+    const matchSplit = activeFilters.split === 'all' || ex.split === activeFilters.split;
+    const matchType = activeFilters.type === 'all' || ex.type === activeFilters.type;
+    const matchSearch = !query || ex.name.toLowerCase().includes(query) || ex.muscles.join(' ').toLowerCase().includes(query) || ex.desc.toLowerCase().includes(query);
+    return matchEquip && matchSplit && matchType && matchSearch;
+  });
+
+  grid.innerHTML = filtered.map(ex => `
+    <div class="exercise-card">
+      <div class="card-header">
+        <h3>${ex.name}</h3>
+        <span class="difficulty diff-${ex.diff}">${ex.diff}</span>
+      </div>
+      <div class="card-tags">
+        ${ex.equip.map(e => `<span class="tag tag-equip">${e}</span>`).join('')}
+        ${ex.muscles.map(m => `<span class="tag tag-muscle">${m}</span>`).join('')}
+        <span class="tag tag-type">${ex.type}</span>
+        <span class="tag">${ex.split}</span>
+      </div>
+      <div class="card-desc">${ex.desc}</div>
+      <div class="card-sets"><strong>Suggested:</strong> ${ex.sets}
+        <a class="yt-link" href="https://www.youtube.com/results?search_query=${encodeURIComponent(ex.name + ' exercise form')}" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.9 31.9 0 0 0 0 12a31.9 31.9 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.9 31.9 0 0 0 24 12a31.9 31.9 0 0 0-.5-5.8zM9.5 15.6V8.4l6.3 3.6-6.3 3.6z"/></svg>
+          Watch Demo
+        </a>
+      </div>
+    </div>
+  `).join('');
+
+  noResults.style.display = filtered.length === 0 ? 'block' : 'none';
+
+  // Stats
+  const equipCounts = {};
+  filtered.forEach(ex => ex.equip.forEach(e => equipCounts[e] = (equipCounts[e] || 0) + 1));
+  statBar.innerHTML = `
+    <div class="stat"><div class="stat-num">${filtered.length}</div><div class="stat-label">Exercises</div></div>
+    ${Object.entries(equipCounts).map(([k,v]) => `<div class="stat"><div class="stat-num">${v}</div><div class="stat-label">${k}</div></div>`).join('')}
+  `;
+}
+
+let activeTemplateFilter = 'all';
+
+// ============================================================
+// WARM-UP & COOL-DOWN ROUTINES
+// ============================================================
+const warmups = {
+  upper: {
+    warmup: {
+      title: "Upper Body Warm-Up",
+      time: "~5-6 min",
+      desc: "Shoulder, thoracic, and scapular prep. Do this before any pressing or pulling day.",
+      exercises: [
+        { name: "Band Shoulder Pass-Through", sets: "10 reps", note: "Slow, full range" },
+        { name: "Band Pull-Apart", sets: "15 reps", note: "Squeeze shoulder blades" },
+        { name: "Band External Rotation", sets: "10 each side", note: "Elbow pinned to ribs" },
+        { name: "KB Halo", sets: "8 each direction", note: "Light bell, open the t-spine" },
+        { name: "Scapular Pull-Up", sets: "8 reps", note: "Depress and retract, no bend" },
+        { name: "Ring Support Hold", sets: "15-20s", note: "Rings turned out, shoulders down" },
+        { name: "Dead Hang", sets: "20-30s", note: "Relax and decompress" },
+      ]
+    },
+    cooldown: {
+      title: "Upper Body Cool-Down",
+      time: "~5 min",
+      desc: "Stretch what you just worked. Focus on chest, lats, and shoulders.",
+      exercises: [
+        { name: "Dead Hang", sets: "30-45s", note: "Passive lat and shoulder stretch" },
+        { name: "Band Dislocate (slow)", sets: "8 reps", note: "Wide grip, 3s each direction" },
+        { name: "KB Arm Bar", sets: "20-30s each", note: "Light bell, let gravity open the chest" },
+        { name: "Cross-body shoulder stretch", sets: "20s each", note: "Pull arm across chest" },
+        { name: "Doorframe chest stretch", sets: "20s each", note: "Arm on wall, turn away" },
+      ]
+    }
+  },
+  lower: {
+    warmup: {
+      title: "Lower Body Warm-Up",
+      time: "~5-6 min",
+      desc: "Hip, ankle, and glute activation. Do this before any squat, hinge, or lunge day.",
+      exercises: [
+        { name: "World's Greatest Stretch", sets: "5 each side", note: "Lunge, rotate, reach" },
+        { name: "90/90 Hip Switch", sets: "8 each side", note: "Controlled, pause at each end" },
+        { name: "Band Monster Walk", sets: "10 steps each way", note: "Lateral + forward" },
+        { name: "Deep Squat Hold", sets: "30-45s", note: "Elbows push knees out" },
+        { name: "KB Hike Pass", sets: "8 reps", note: "Rehearse the swing start" },
+        { name: "KB Goblet Squat (light, slow)", sets: "5 reps", note: "3s down, pause at bottom" },
+      ]
+    },
+    cooldown: {
+      title: "Lower Body Cool-Down",
+      time: "~5 min",
+      desc: "Open the hips and stretch the posterior chain after heavy lower work.",
+      exercises: [
+        { name: "Deep Squat Hold", sets: "45-60s", note: "Relax into it, breathe" },
+        { name: "90/90 Hip Switch", sets: "6 each side", note: "Slow, explore end range" },
+        { name: "KB Cossack Squat (light)", sets: "5 each side", note: "Stretch the adductors" },
+        { name: "Standing hamstring stretch (foot on box)", sets: "30s each", note: "Hinge, don't round" },
+        { name: "Pigeon stretch", sets: "30s each", note: "Front shin parallel if possible" },
+        { name: "Cat-Cow", sets: "8 reps", note: "Decompress the spine" },
+      ]
+    }
+  },
+  full: {
+    warmup: {
+      title: "Full Body Warm-Up",
+      time: "~6-7 min",
+      desc: "Combined upper and lower prep. Use before full-body days, complexes, or flows.",
+      exercises: [
+        { name: "Cat-Cow", sets: "8 reps", note: "Wake up the spine" },
+        { name: "World's Greatest Stretch", sets: "4 each side", note: "Lunge, rotate, reach" },
+        { name: "Band Shoulder Pass-Through", sets: "8 reps", note: "Open the shoulders" },
+        { name: "Band Pull-Apart", sets: "12 reps", note: "Activate upper back" },
+        { name: "Deep Squat Hold", sets: "30s", note: "Pry the hips open" },
+        { name: "KB Halo", sets: "6 each direction", note: "Light bell" },
+        { name: "KB Swing (light)", sets: "10 reps", note: "Wake up the hinge" },
+        { name: "Dead Hang", sets: "20s", note: "Decompress" },
+      ]
+    },
+    cooldown: {
+      title: "Full Body Cool-Down",
+      time: "~5-6 min",
+      desc: "Hit every major area. Breathe deep, slow everything down.",
+      exercises: [
+        { name: "Dead Hang", sets: "30-45s", note: "Passive decompression" },
+        { name: "Deep Squat Hold", sets: "45s", note: "Relax into it" },
+        { name: "KB Arm Bar", sets: "20s each", note: "Light, open the chest" },
+        { name: "90/90 Hip Switch", sets: "6 each", note: "Slow rotations" },
+        { name: "Standing hamstring stretch", sets: "20s each", note: "Foot on box, hinge" },
+        { name: "Cat-Cow", sets: "8 reps", note: "Slow, exhale fully on each" },
+      ]
+    }
+  },
+  conditioning: {
+    warmup: {
+      title: "Conditioning Day Warm-Up",
+      time: "~4-5 min",
+      desc: "Get the heart rate up progressively. Prime the joints without fatiguing.",
+      exercises: [
+        { name: "Jumping Jacks or easy skip", sets: "30s", note: "Elevate heart rate gently" },
+        { name: "World's Greatest Stretch", sets: "3 each side", note: "Quick but full range" },
+        { name: "Band Pull-Apart", sets: "10 reps", note: "Activate upper back" },
+        { name: "Deep Squat Hold", sets: "20s", note: "Quick hip opener" },
+        { name: "KB Swing (light)", sets: "10 reps", note: "Build to working pace" },
+        { name: "Bear Crawl", sets: "10m", note: "Full-body primer" },
+      ]
+    },
+    cooldown: {
+      title: "Conditioning Day Cool-Down",
+      time: "~5 min",
+      desc: "Bring the heart rate down gradually. Stretch what's tight.",
+      exercises: [
+        { name: "Easy walk or pace around", sets: "60s", note: "Let HR come down" },
+        { name: "Dead Hang", sets: "30s", note: "Decompress and grip release" },
+        { name: "Deep Squat Hold", sets: "30-45s", note: "Open hips" },
+        { name: "Band Dislocate (slow)", sets: "8 reps", note: "Shoulder reset" },
+        { name: "Cat-Cow", sets: "8 reps", note: "Spinal decompression" },
+        { name: "Prone Y-T-W Raise", sets: "5 each shape", note: "Light posterior chain activation" },
+      ]
+    }
+  },
+  rest: {
+    warmup: {
+      title: "Recovery Day Flow",
+      time: "~10-15 min",
+      desc: "No warm-up needed — this IS the workout. Gentle movement to promote blood flow and recovery.",
+      exercises: [
+        { name: "Cat-Cow", sets: "10 reps", note: "Slow, full breath each" },
+        { name: "World's Greatest Stretch", sets: "5 each side", note: "Extra slow, hold each position" },
+        { name: "90/90 Hip Switch", sets: "8 each side", note: "Explore end range" },
+        { name: "Deep Squat Hold", sets: "60-90s", note: "Dan John's daily practice" },
+        { name: "KB Halo (very light)", sets: "8 each direction", note: "Shoulder lubrication" },
+        { name: "KB Arm Bar (light)", sets: "30s each", note: "Chest and shoulder opener" },
+        { name: "Dead Hang", sets: "45-60s", note: "Spinal decompression" },
+        { name: "Band Dislocate", sets: "10 reps", note: "Full range, no rush" },
+        { name: "Hollow Body Hold", sets: "20s", note: "Light core activation" },
+        { name: "Prone Y-T-W Raise", sets: "5 each shape", note: "Upper back blood flow" },
+      ]
+    },
+    cooldown: {
+      title: "Recovery Day Stretch",
+      time: "~5 min",
+      desc: "Optional. If you want extra stretching after the flow.",
+      exercises: [
+        { name: "Pigeon stretch", sets: "45s each", note: "Deep hip opener" },
+        { name: "Standing hamstring stretch", sets: "30s each", note: "Foot on box" },
+        { name: "Cross-body shoulder stretch", sets: "20s each", note: "Gentle pull" },
+        { name: "Child's pose", sets: "45-60s", note: "Lats and back stretch" },
+        { name: "Seated forward fold", sets: "30-45s", note: "Hamstrings and spine" },
+      ]
+    }
+  }
+};
+
+function renderWarmup(dayType) {
+  const data = warmups[dayType];
+  if (!data) return;
+  const container = document.getElementById('warmupOutput');
+
+  function renderRoutine(routine, color) {
+    return `
+      <div class="day-card" style="margin-bottom: 14px;">
+        <div class="day-header">
+          ${routine.title}
+          <span class="day-type" style="background: ${color}22; color: ${color};">${routine.time}</span>
+        </div>
+        <div style="padding: 0 18px 6px; font-size: 0.84rem; color: var(--text-dim);">${routine.desc}</div>
+        <div class="day-body">
+          ${routine.exercises.map(e => `
+            <div class="day-exercise" style="flex-wrap: wrap;">
+              <span class="ex-name">${e.name}</span>
+              <span class="ex-sets">${e.sets}</span>
+              ${e.note ? `<span style="width:100%; font-size:0.75rem; color:var(--text-dim); margin-top:1px; font-style:italic;">${e.note}</span>` : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+  }
+
+  container.innerHTML = `
+    <div class="template-section">
+      <div class="week-grid" style="grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));">
+        ${renderRoutine(data.warmup, '#52b788')}
+        ${renderRoutine(data.cooldown, '#4895ef')}
+      </div>
+    </div>`;
+}
+
+function renderTemplateWeek(t) {
+  return `
+    <div class="template-section">
+      <h2>${t.title}</h2>
+      <p>${t.desc}</p>
+      <div class="week-grid">
+        ${t.days.map(d => `
+          <div class="day-card">
+            <div class="day-header">
+              ${d.day}
+              <span class="day-type type-${d.type}">${d.label}</span>
+            </div>
+            <div class="day-body">
+              ${d.exercises.map(e => `
+                <div class="day-exercise">
+                  <span class="ex-name">${e.name}</span>
+                  <span class="ex-sets">${e.sets}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+}
+
+function renderTemplates() {
+  const filtered = activeTemplateFilter === 'all'
+    ? templates
+    : templates.filter(t => t.cat === activeTemplateFilter);
+  document.getElementById('templateGrid').innerHTML = filtered.length
+    ? filtered.map(renderTemplateWeek).join('')
+    : '<div class="no-results">No templates in this category.</div>';
+}
+
+// ============================================================
+// WORKOUT GENERATOR
+// ============================================================
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function pick(arr, n) { return shuffle(arr).slice(0, n); }
+
+const goalConfig = {
+  strength:     { types: ["strength","power"], setsLow: 4, setsHigh: 5, repsLow: 3, repsHigh: 6,  rest: "2-3 min" },
+  hypertrophy:  { types: ["strength"],         setsLow: 3, setsHigh: 4, repsLow: 8, repsHigh: 12, rest: "60-90s" },
+  conditioning: { types: ["strength","power","cardio"], setsLow: 3, setsHigh: 4, repsLow: 10, repsHigh: 20, rest: "30-60s" },
+  power:        { types: ["power","strength"], setsLow: 4, setsHigh: 5, repsLow: 3, repsHigh: 5,  rest: "2-3 min" },
+  mobility:     { types: ["mobility","strength"], setsLow: 2, setsHigh: 3, repsLow: 5, repsHigh: 8, rest: "as needed" },
+};
+
+const splitMap = {
+  upper:     { splits: ["upper"], mustHavePush: true, mustHavePull: true },
+  lower:     { splits: ["lower"] },
+  full:      { splits: ["upper","lower","full","core"] },
+  "push-pull": { splits: ["upper"], mustHavePush: true, mustHavePull: true },
+};
+
+const pushMuscles = ["chest","triceps","shoulders"];
+const pullMuscles = ["back","biceps","lats","rear delts","upper back"];
+
+function generateSingleWorkout() {
+  const goal = document.getElementById('genGoal').value;
+  const split = document.getElementById('genSplit').value;
+  const count = parseInt(document.getElementById('genCount').value) || 6;
+  const time = parseInt(document.getElementById('genTime').value) || 30;
+  const checkedEquip = [...document.querySelectorAll('.gen-equip:checked')].map(c => c.value);
+
+  if (checkedEquip.length === 0) return { error: "Check at least one piece of equipment." };
+
+  const cfg = goalConfig[goal];
+  const sm = splitMap[split];
+
+  // Filter exercises by equipment and split
+  let pool = exercises.filter(ex => {
+    const equipMatch = ex.equip.some(e => checkedEquip.includes(e));
+    const splitMatch = sm.splits.includes(ex.split);
+    const typeMatch = goal === 'mobility'
+      ? true  // for mobility, allow everything but prefer mobility type
+      : cfg.types.includes(ex.type) || ex.type === 'strength';
+    return equipMatch && splitMatch && typeMatch;
+  });
+
+  if (pool.length < 3) return { error: "Not enough exercises match your filters. Try adding more equipment or changing the split." };
+
+  let selected = [];
+
+  // Ensure push/pull balance for upper and push-pull splits
+  if (sm.mustHavePush) {
+    const pushPool = pool.filter(ex => ex.muscles.some(m => pushMuscles.includes(m)));
+    const pullPool = pool.filter(ex => ex.muscles.some(m => pullMuscles.includes(m)));
+    const pushCount = Math.max(1, Math.floor(count / 2));
+    const pullCount = count - pushCount;
+    selected = [...pick(pushPool, pushCount), ...pick(pullPool, pullCount)];
+    // If we're short, fill from general pool
+    if (selected.length < count) {
+      const remaining = pool.filter(ex => !selected.includes(ex));
+      selected = [...selected, ...pick(remaining, count - selected.length)];
+    }
+  } else {
+    // For mobility goal, prefer mobility type exercises
+    if (goal === 'mobility') {
+      const mobilityPool = pool.filter(ex => ex.type === 'mobility');
+      const otherPool = pool.filter(ex => ex.type !== 'mobility');
+      const mobCount = Math.min(mobilityPool.length, Math.ceil(count * 0.6));
+      selected = [...pick(mobilityPool, mobCount), ...pick(otherPool, count - mobCount)];
+    } else {
+      selected = pick(pool, count);
+    }
+  }
+
+  selected = selected.slice(0, count);
+
+  // Generate sets/reps based on goal
+  const workout = selected.map(ex => {
+    const sets = cfg.setsLow + Math.floor(Math.random() * (cfg.setsHigh - cfg.setsLow + 1));
+    let reps;
+    if (ex.type === 'mobility') {
+      reps = ex.sets; // keep the original mobility prescription
+    } else if (goal === 'conditioning' && Math.random() > 0.5) {
+      reps = `${sets}x${cfg.repsLow + Math.floor(Math.random() * (cfg.repsHigh - cfg.repsLow + 1))}`;
+    } else {
+      const r = cfg.repsLow + Math.floor(Math.random() * (cfg.repsHigh - cfg.repsLow + 1));
+      const unilateral = ex.sets.includes('each') || ex.sets.includes('ea');
+      reps = `${sets}x${r}${unilateral ? ' ea' : ''}`;
+    }
+    return { name: ex.name, sets: reps, diff: ex.diff, muscles: ex.muscles, equip: ex.equip };
+  });
+
+  const splitLabel = split === 'push-pull' ? 'Push / Pull' : split.charAt(0).toUpperCase() + split.slice(1);
+  const goalLabel = goal.charAt(0).toUpperCase() + goal.slice(1);
+
+  return { workout, goal: goalLabel, split: splitLabel, rest: cfg.rest, time, error: null };
+}
+
+function renderGeneratedWorkout(result, container) {
+  if (!container) container = document.getElementById('genOutput');
+  if (result.error) {
+    container.innerHTML = `<div class="no-results">${result.error}</div>`;
+    return;
+  }
+  return `
+    <div class="day-card" style="margin-bottom: 14px;">
+      <div class="day-header">
+        ${result.split} ${result.goal}
+        <span class="day-type type-upper">~${result.time} min &middot; Rest: ${result.rest}</span>
+      </div>
+      <div class="day-body">
+        ${result.workout.map(e => `
+          <div class="day-exercise">
+            <span class="ex-name">${e.name}</span>
+            <span class="ex-sets">${e.sets}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+}
+
+function generateAndRender() {
+  const result = generateSingleWorkout();
+  const container = document.getElementById('genOutput');
+  if (result.error) {
+    container.innerHTML = `<div class="no-results">${result.error}</div>`;
+    return;
+  }
+  container.innerHTML = `
+    <div class="template-section">
+      <h2>Your Workout</h2>
+      <p class="gen-note">Don't like it? Hit Generate again. Every roll is different.</p>
+      ${renderGeneratedWorkout(result)}
+    </div>`;
+}
+
+function generateFullWeek() {
+  const container = document.getElementById('genOutput');
+  const goal = document.getElementById('genGoal').value;
+  const split = document.getElementById('genSplit').value;
+  const count = parseInt(document.getElementById('genCount').value) || 6;
+  const time = parseInt(document.getElementById('genTime').value) || 30;
+
+  // Build a week: 4 strength days + 1 mobility + 1 cardio + rest
+  const dayNames = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+
+  // Save original settings
+  const origGoal = document.getElementById('genGoal').value;
+  const origSplit = document.getElementById('genSplit').value;
+
+  const weekPlan = [
+    { day: "Monday", goalOverride: goal, splitOverride: "upper" },
+    { day: "Tuesday", goalOverride: goal, splitOverride: "lower" },
+    { day: "Wednesday", goalOverride: "mobility", splitOverride: "full" },
+    { day: "Thursday", goalOverride: goal, splitOverride: "upper" },
+    { day: "Friday", goalOverride: goal, splitOverride: "lower" },
+    { day: "Saturday", goalOverride: "conditioning", splitOverride: "full" },
+    { day: "Sunday", rest: true },
+  ];
+
+  let html = '<div class="template-section"><h2>Your Generated Week</h2><p class="gen-note">Built from your exercise library with randomized selection. Hit Generate Full Week again for a completely different program.</p><div class="week-grid">';
+
+  weekPlan.forEach(wp => {
+    if (wp.rest) {
+      html += `
+        <div class="day-card">
+          <div class="day-header">Sunday<span class="day-type type-rest">Rest</span></div>
+          <div class="day-body"><div class="day-exercise"><span class="ex-name">Walk, stretch, or light play</span><span class="ex-sets">Enjoy it</span></div></div>
+        </div>`;
+      return;
+    }
+
+    // Temporarily set the selectors
+    document.getElementById('genGoal').value = wp.goalOverride;
+    document.getElementById('genSplit').value = wp.splitOverride;
+
+    const result = generateSingleWorkout();
+    const typeClass = wp.goalOverride === 'mobility' ? 'mobility' : wp.goalOverride === 'conditioning' ? 'cardio' : wp.splitOverride;
+    const label = wp.goalOverride === 'mobility' ? 'Mobility + Flow'
+      : wp.goalOverride === 'conditioning' ? 'Conditioning'
+      : wp.splitOverride === 'upper' ? 'Upper ' + goal.charAt(0).toUpperCase() + goal.slice(1)
+      : 'Lower ' + goal.charAt(0).toUpperCase() + goal.slice(1);
+
+    if (result.error) {
+      html += `<div class="day-card"><div class="day-header">${wp.day}<span class="day-type type-${typeClass}">${label}</span></div><div class="day-body"><div class="day-exercise"><span class="ex-name">${result.error}</span><span class="ex-sets"></span></div></div></div>`;
+    } else {
+      html += `
+        <div class="day-card">
+          <div class="day-header">${wp.day}<span class="day-type type-${typeClass}">${label}</span></div>
+          <div class="day-body">
+            ${result.workout.map(e => `<div class="day-exercise"><span class="ex-name">${e.name}</span><span class="ex-sets">${e.sets}</span></div>`).join('')}
+          </div>
+        </div>`;
+    }
+  });
+
+  html += '</div></div>';
+
+  // Restore original settings
+  document.getElementById('genGoal').value = origGoal;
+  document.getElementById('genSplit').value = origSplit;
+
+  container.innerHTML = html;
+}
+
+function renderComplexes() {
+  const query = document.getElementById('complexSearchBox').value.toLowerCase();
+  const filtered = complexes.filter(c => {
+    const matchEquip = activeComplexFilters.equip === 'all' || c.equip === activeComplexFilters.equip;
+    const matchGoal = activeComplexFilters.goal === 'all' || c.goal === activeComplexFilters.goal;
+    const matchSearch = !query || c.name.toLowerCase().includes(query) || c.desc.toLowerCase().includes(query) || c.steps.some(s => s.move.toLowerCase().includes(query));
+    return matchEquip && matchGoal && matchSearch;
+  });
+
+  const grid = document.getElementById('complexGrid');
+  grid.innerHTML = filtered.map(c => `
+    <div class="complex-card">
+      <div class="complex-header">
+        <h3>${c.name}</h3>
+        <span class="difficulty diff-${c.diff}">${c.diff}</span>
+      </div>
+      <div class="complex-meta">
+        <span class="tag tag-equip">${c.equip}</span>
+        <span class="tag tag-type">${c.goal}</span>
+        <span class="tag">${c.duration}</span>
+      </div>
+      <div class="complex-desc">${c.desc}</div>
+      <div class="complex-steps">
+        ${c.steps.map((s, i) => `
+          <div class="complex-step">
+            <span class="step-num">${i + 1}</span>
+            <span class="step-text">${s.move}</span>
+            <span class="step-reps">${s.reps}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div class="complex-footer">
+        <span><strong>Protocol:</strong> ${c.protocol}</span>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('noComplexResults').style.display = filtered.length === 0 ? 'block' : 'none';
+}
+
+let activeComplexFilters = { equip: 'all', goal: 'all' };
+
+// ============================================================
+// EVENT HANDLERS
+// ============================================================
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const filter = btn.dataset.filter;
+    const value = btn.dataset.value;
+    activeFilters[filter] = value;
+    document.querySelectorAll(`.filter-btn[data-filter="${filter}"]`).forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderExercises();
+  });
+});
+
+searchBox.addEventListener('input', renderExercises);
+
+document.querySelectorAll('.cfilter').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const filter = btn.dataset.cfilter;
+    const value = btn.dataset.value;
+    activeComplexFilters[filter] = value;
+    document.querySelectorAll(`.cfilter[data-cfilter="${filter}"]`).forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderComplexes();
+  });
+});
+
+document.getElementById('complexSearchBox').addEventListener('input', renderComplexes);
+
+document.querySelectorAll('.tfilter').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const value = btn.dataset.value;
+    activeTemplateFilter = value;
+    document.querySelectorAll('.tfilter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderTemplates();
+  });
+});
+
+document.querySelectorAll('.wfilter').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const value = btn.dataset.value;
+    document.querySelectorAll('.wfilter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderWarmup(value);
+  });
+});
+
+document.getElementById('generateBtn').addEventListener('click', generateAndRender);
+document.getElementById('generateWeekBtn').addEventListener('click', generateFullWeek);
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+
+// Init — wrapped in try-catch for debugging on mobile
+try {
+  renderExercises();
+  renderComplexes();
+  renderTemplates();
+  renderWarmup('upper');
+} catch(e) {
+  var msg = document.getElementById('jsFailMsg');
+  if(msg) { msg.style.display = 'block'; msg.textContent = 'JS Error: ' + e.message; }
+}
+
+// Fallback: if exerciseGrid is still empty after 2s, show help message
+setTimeout(function() {
+  var grid = document.getElementById('exerciseGrid');
+  if (grid && grid.children.length === 0) {
+    document.getElementById('jsFailMsg').style.display = 'block';
+  }
+}, 2000);
+</script>
+</body>
+</html>
