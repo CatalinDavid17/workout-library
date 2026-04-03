@@ -675,6 +675,8 @@
         <button class="filter-btn tfilter" data-tfilter="cat" data-value="conditioning">Conditioning</button>
         <button class="filter-btn tfilter" data-tfilter="cat" data-value="mixed">Mixed</button>
         <button class="filter-btn tfilter" data-tfilter="cat" data-value="easy">Easy Week</button>
+        <button class="gen-btn" id="surpriseMeBtn" style="margin-left: 12px; padding: 6px 18px; font-size: 0.85rem;">Surprise Me</button>
+        <button class="gen-btn-secondary" id="shuffleBtn" style="margin-left: 6px; padding: 6px 18px; font-size: 0.85rem;">Shuffle Order</button>
       </div>
     </div>
     <div id="templateGrid"></div>
@@ -710,6 +712,7 @@
             <option value="conditioning">Conditioning (high reps, short rest)</option>
             <option value="power">Power (explosive)</option>
             <option value="mobility">Mobility / Recovery</option>
+            <option value="mixed">Mixed (varies each day)</option>
           </select>
         </div>
         <div class="gen-field">
@@ -957,6 +960,13 @@ const exercises = [
   { name: "Ring Body Saw", equip: ["rings"], split: "core", muscles: ["core","shoulders"], type: "strength", diff: "intermediate", desc: "From ring plank, shift body forward and back. Dynamic anti-extension challenge.", sets: "3x8-10" },
   { name: "Ring Knee Tuck", equip: ["rings"], split: "core", muscles: ["core","hip flexors"], type: "strength", diff: "intermediate", desc: "Feet in rings, plank position, pull knees to chest. Great for dynamic core strength.", sets: "3x10-12" },
   { name: "Ring Fall-Out", equip: ["rings"], split: "core", muscles: ["core","chest","lats"], type: "strength", diff: "advanced", desc: "From standing, slowly fall forward letting rings extend overhead, pull back to start. Full-body tension.", sets: "3x5-6" },
+  { name: "Ring Archer Push-Up", equip: ["rings"], split: "upper", muscles: ["chest","triceps","core"], type: "strength", diff: "advanced", desc: "One arm does a full push-up on the ring while the other extends straight out to the side. Unilateral chest and tricep strength with extreme stability demands. The ring version is far harder than floor archer push-ups.", sets: "3x4-5 each side" },
+  { name: "Ring Hamstring Curl", equip: ["rings"], split: "lower", muscles: ["hamstrings","glutes","core"], type: "strength", diff: "intermediate", desc: "Lie on back, heels in ring straps, bridge up, curl heels toward glutes. One of the few ring exercises for the posterior chain. Brutal on hamstrings when done slowly.", sets: "3x8-10" },
+  { name: "Ring Single-Leg Squat (Assisted)", equip: ["rings"], split: "lower", muscles: ["quads","glutes","core"], type: "strength", diff: "intermediate", desc: "Hold rings for balance and perform a pistol squat. The rings let you train full-depth single-leg squats before you have the balance for freestanding pistols. Great progression tool.", sets: "3x5-6 each side" },
+  { name: "Ring Rollout to Pike", equip: ["rings"], split: "core", muscles: ["core","shoulders","hip flexors"], type: "strength", diff: "advanced", desc: "From ring plank with feet in straps, roll out into full extension then pike hips to ceiling. Combines anti-extension and hip flexion in one devastating core exercise.", sets: "3x6-8" },
+  { name: "Ring Turn-Out Push-Up", equip: ["rings"], split: "upper", muscles: ["chest","triceps","biceps","core"], type: "strength", diff: "advanced", desc: "Push-up on rings but at the top, turn rings out to full supination (palms forward). The turn-out at lockout activates biceps and builds the straight-arm strength needed for iron cross progressions.", sets: "3x6-8" },
+  { name: "Ring Reverse Fly", equip: ["rings"], split: "upper", muscles: ["rear delts","upper back","core"], type: "strength", diff: "intermediate", desc: "Lean back holding rings, open arms wide in a reverse fly motion then squeeze back together. Hits the rear delts and rhomboids harder than band pull-aparts because of the constant instability.", sets: "3x10-12" },
+  { name: "Ring Pendulum Swing", equip: ["rings"], split: "core", muscles: ["core","obliques","hip flexors"], type: "strength", diff: "intermediate", desc: "Feet in ring straps, plank position, swing legs side to side in a controlled pendulum. Anti-rotation and oblique work in one movement. Keep the upper body perfectly still — all movement comes from the hips.", sets: "3x8-10 each side" },
 
   // ── BANDS ───────────────────────────────────────────────────
   { name: "Band Pull-Apart", equip: ["band"], split: "upper", muscles: ["rear delts","upper back"], type: "strength", diff: "beginner", desc: "Hold band at shoulder width, pull apart until it touches your chest. Daily shoulder health staple.", sets: "3x15-20" },
@@ -1029,13 +1039,13 @@ const templates = [
       { day: "Tuesday", label: "Lower Grind", type: "lower", exercises: [
         { name: "KB Front Squat (Double)", sets: "5x5" },
         { name: "KB Romanian Deadlift (Double)", sets: "4x6" },
-        { name: "KB Single-Leg Deadlift", sets: "3x6 ea" },
+        { name: "KB Rotational Deadlift", sets: "3x6 ea" },
         { name: "KB Step-Up (heavy)", sets: "3x6 ea" },
-        { name: "Band Pallof Press", sets: "3x10 ea" },
+        { name: "Band Rotational Chop", sets: "3x10 ea" },
       ]},
       { day: "Wednesday", label: "Mobility", type: "mobility", exercises: [
         { name: "World's Greatest Stretch", sets: "3x5 ea" },
-        { name: "KB Arm Bar", sets: "2x30s ea" },
+        { name: "KB Windmill", sets: "3x5 ea" },
         { name: "KB Halo", sets: "2x8 ea" },
         { name: "90/90 Hip Switch", sets: "3x8 ea" },
         { name: "Deep Squat Hold", sets: "3x45s" },
@@ -1044,15 +1054,15 @@ const templates = [
       { day: "Thursday", label: "Upper Pull", type: "upper", exercises: [
         { name: "Pull-Up", sets: "5x3-5" },
         { name: "KB Gorilla Row", sets: "4x6-8 ea" },
-        { name: "Archer Pull-Up", sets: "3x3 ea" },
+        { name: "KB Side Plank Row", sets: "3x5 ea" },
         { name: "Ring Archer Row", sets: "3x5 ea" },
         { name: "KB Waiter Walk", sets: "3x30m ea" },
       ]},
       { day: "Friday", label: "Lower Power", type: "lower", exercises: [
         { name: "KB Snatch", sets: "5x5 ea" },
-        { name: "KB Goblet Squat (pause 3s)", sets: "4x6" },
+        { name: "KB Cossack Squat", sets: "4x6 ea" },
         { name: "KB Swing (heavy)", sets: "5x10" },
-        { name: "KB Lateral Lunge", sets: "3x6 ea" },
+        { name: "KB Lateral Step Swing", sets: "3x6 ea" },
         { name: "Toes to Bar", sets: "3x8" },
       ]},
       { day: "Saturday", label: "Easy Cardio", type: "cardio", exercises: [
@@ -1080,15 +1090,15 @@ const templates = [
       ]},
       { day: "Tuesday", label: "KB Lower", type: "lower", exercises: [
         { name: "KB Front Squat (Double)", sets: "5x5" },
-        { name: "KB Single-Leg Deadlift", sets: "4x6 ea" },
-        { name: "KB Reverse Lunge (rack hold)", sets: "3x8 ea" },
+        { name: "KB Curtsy Lunge", sets: "3x8 ea" },
+        { name: "KB Cossack Squat", sets: "3x6 ea" },
         { name: "KB Swing (heavy)", sets: "5x10" },
-        { name: "Hanging Leg Raise", sets: "3x10" },
+        { name: "Hanging Windshield Wiper", sets: "3x5 ea" },
       ]},
       { day: "Wednesday", label: "Mobility + Skill", type: "mobility", exercises: [
         { name: "Ring Skin the Cat", sets: "3x4" },
         { name: "KB Turkish Get-Up", sets: "3x2 ea" },
-        { name: "Band Dislocate", sets: "2x10" },
+        { name: "KB Bent Press", sets: "3x3 ea (light, practice)" },
         { name: "KB Windmill", sets: "3x5 ea" },
         { name: "Deep Squat Hold", sets: "3x60s" },
         { name: "Cat-Cow", sets: "2x10" },
@@ -1103,9 +1113,9 @@ const templates = [
       { day: "Friday", label: "KB Power + Core", type: "lower", exercises: [
         { name: "KB Clean", sets: "3x6 ea" },
         { name: "KB Goblet Squat", sets: "4x8" },
-        { name: "KB Romanian Deadlift (Double)", sets: "4x8" },
+        { name: "KB Rotational Deadlift", sets: "3x6 ea" },
         { name: "Ring L-Sit", sets: "3x15s" },
-        { name: "Ring Knee Tuck", sets: "3x10" },
+        { name: "Band Rotational Chop", sets: "3x10 ea" },
       ]},
       { day: "Saturday", label: "Light Conditioning", type: "cardio", exercises: [
         { name: "KB Swing", sets: "3x20" },
@@ -1125,7 +1135,7 @@ const templates = [
     days: [
       { day: "Monday", label: "Press Focus", type: "upper", exercises: [
         { name: "KB Single-Arm Press", sets: "5x5 ea" },
-        { name: "KB Push Press", sets: "3x6 ea" },
+        { name: "KB Clean to Rotational Press", sets: "3x6 ea" },
         { name: "Ring Dip", sets: "4x6-8" },
         { name: "Band Pull-Apart", sets: "3x20" },
         { name: "KB Waiter Walk", sets: "3x30m ea" },
@@ -1134,8 +1144,8 @@ const templates = [
         { name: "KB Front Squat (Double)", sets: "5x5" },
         { name: "KB Romanian Deadlift (Double)", sets: "4x8" },
         { name: "KB Cossack Squat", sets: "3x6 ea" },
-        { name: "Band Hip Thrust", sets: "3x15" },
-        { name: "Hanging Knee Raise", sets: "3x12" },
+        { name: "KB Curtsy Lunge", sets: "3x8 ea" },
+        { name: "Hanging Windshield Wiper", sets: "3x5 ea" },
       ]},
       { day: "Wednesday", label: "Mobility", type: "mobility", exercises: [
         { name: "KB Arm Bar", sets: "2x30s ea" },
@@ -1178,18 +1188,18 @@ const templates = [
     desc: "High reps, short rest, heart rate up. Every strength day is a circuit. Mobility days are active recovery.",
     days: [
       { day: "Monday", label: "Upper Circuit", type: "upper", exercises: [
-        { name: "KB Push Press", sets: "4x8 ea" },
+        { name: "KB Clean to Rotational Press", sets: "4x6 ea" },
         { name: "Pull-Up", sets: "4x max (leave 1-2 in tank)" },
         { name: "Ring Push-Up", sets: "3x12-15" },
-        { name: "KB Gorilla Row", sets: "3x12 ea" },
-        { name: "Band Face Pull", sets: "3x20" },
+        { name: "KB Side Plank Row", sets: "3x8 ea" },
+        { name: "Band Rotational Chop", sets: "3x10 ea" },
         { name: "Note: circuit — 60s rest between rounds", sets: "" },
       ]},
       { day: "Tuesday", label: "Lower AMRAP", type: "lower", exercises: [
         { name: "KB Swing", sets: "15" },
         { name: "KB Goblet Squat", sets: "10" },
-        { name: "KB Reverse Lunge", sets: "8 ea" },
-        { name: "Broad Jump", sets: "5" },
+        { name: "KB Curtsy Lunge", sets: "8 ea" },
+        { name: "KB Lateral Step Swing", sets: "6 ea" },
         { name: "Note: AMRAP 20 min — as many rounds as possible", sets: "" },
       ]},
       { day: "Wednesday", label: "Mobility", type: "mobility", exercises: [
@@ -1216,9 +1226,9 @@ const templates = [
         { name: "Note: for time — break as needed", sets: "" },
       ]},
       { day: "Saturday", label: "Full-Body Blast", type: "cardio", exercises: [
-        { name: "KB Swing to Squat", sets: "5 rounds" },
+        { name: "KB Side Swing", sets: "3x10 ea" },
         { name: "Burpee", sets: "4x12" },
-        { name: "Ring Knee Tuck", sets: "3x12" },
+        { name: "KB Figure 8", sets: "3x10 ea" },
         { name: "Mountain Climber", sets: "3x30s" },
         { name: "Bear Crawl", sets: "3x20m" },
         { name: "KB Snatch", sets: "3x8 ea" },
@@ -1242,10 +1252,10 @@ const templates = [
       ]},
       { day: "Tuesday", label: "Swing Intervals", type: "lower", exercises: [
         { name: "KB Swing", sets: "30s on / 30s off x 10" },
-        { name: "KB Goblet Squat", sets: "3x12" },
-        { name: "KB Lateral Lunge", sets: "3x8 ea" },
-        { name: "Band Monster Walk", sets: "3x15 ea" },
-        { name: "Hanging Knee Raise", sets: "3x15" },
+        { name: "KB Cossack Squat", sets: "3x6 ea" },
+        { name: "KB Lateral Step Swing", sets: "3x8 ea" },
+        { name: "KB Side Swing", sets: "3x10 ea" },
+        { name: "Hanging Windshield Wiper", sets: "3x5 ea" },
       ]},
       { day: "Wednesday", label: "Mobility", type: "mobility", exercises: [
         { name: "KB Turkish Get-Up", sets: "3x2 ea (light)" },
@@ -1265,9 +1275,9 @@ const templates = [
       { day: "Friday", label: "KB Complex Day", type: "lower", exercises: [
         { name: "Clean + Squat + Press (per side)", sets: "5x(1+2+1) ea" },
         { name: "KB Single-Arm Swing", sets: "4x12 ea" },
-        { name: "KB Single-Leg Deadlift", sets: "3x8 ea" },
-        { name: "Band Pallof Press", sets: "3x10 ea" },
-        { name: "Hollow Body Hold", sets: "3x30s" },
+        { name: "KB Rotational Deadlift", sets: "3x6 ea" },
+        { name: "Band Rotational Chop", sets: "3x10 ea" },
+        { name: "KB Around the World", sets: "2x10 ea" },
       ]},
       { day: "Saturday", label: "Snatch Test Prep", type: "cardio", exercises: [
         { name: "KB Snatch (alternating)", sets: "10 min continuous" },
@@ -1294,9 +1304,9 @@ const templates = [
       ]},
       { day: "Tuesday", label: "Lower EMOM (20 min)", type: "lower", exercises: [
         { name: "Min 1: KB Swing", sets: "15" },
-        { name: "Min 2: KB Goblet Squat", sets: "8" },
-        { name: "Min 3: KB Single-Leg Deadlift", sets: "5 ea" },
-        { name: "Min 4: Jump Squat", sets: "8" },
+        { name: "Min 2: KB Cossack Squat", sets: "5 ea" },
+        { name: "Min 3: KB Rotational Deadlift", sets: "5 ea" },
+        { name: "Min 4: KB Lateral Step Swing", sets: "6 ea" },
         { name: "Note: 5 rounds = 20 min", sets: "" },
       ]},
       { day: "Wednesday", label: "Mobility", type: "mobility", exercises: [
@@ -1308,10 +1318,10 @@ const templates = [
         { name: "Dead Hang", sets: "3x45s" },
       ]},
       { day: "Thursday", label: "Upper EMOM (24 min)", type: "upper", exercises: [
-        { name: "Min 1: Ring Dip", sets: "5-8" },
+        { name: "Min 1: KB Clean to Rotational Press", sets: "5 ea" },
         { name: "Min 2: Chin-Up", sets: "5-8" },
-        { name: "Min 3: KB Bent-Over Row", sets: "8 ea" },
-        { name: "Min 4: Band Face Pull", sets: "15" },
+        { name: "Min 3: KB Side Plank Row", sets: "5 ea" },
+        { name: "Min 4: KB Windmill", sets: "3 ea" },
         { name: "Note: 6 rounds = 24 min", sets: "" },
       ]},
       { day: "Friday", label: "Lower EMOM (25 min)", type: "lower", exercises: [
@@ -1350,10 +1360,10 @@ const templates = [
       ]},
       { day: "Tuesday", label: "Lower Circuit", type: "lower", exercises: [
         { name: "KB Swing", sets: "15" },
-        { name: "KB Goblet Squat", sets: "10" },
-        { name: "KB Reverse Lunge", sets: "8 ea" },
-        { name: "Jump Squat", sets: "8" },
-        { name: "Hanging Knee Raise", sets: "12" },
+        { name: "KB Cossack Squat", sets: "6 ea" },
+        { name: "KB Curtsy Lunge", sets: "8 ea" },
+        { name: "KB Side Swing", sets: "8 ea" },
+        { name: "Hanging Windshield Wiper", sets: "5 ea" },
         { name: "Note: 4 rounds, 90s rest between", sets: "" },
       ]},
       { day: "Wednesday", label: "Mobility + Flow", type: "mobility", exercises: [
@@ -1366,11 +1376,11 @@ const templates = [
         { name: "Dead Hang", sets: "3x45s" },
       ]},
       { day: "Thursday", label: "Upper Circuit", type: "upper", exercises: [
-        { name: "Ring Dip", sets: "6-8" },
+        { name: "KB Clean to Rotational Press", sets: "6 ea" },
         { name: "Chin-Up", sets: "6-8" },
-        { name: "KB Renegade Row", sets: "5 ea" },
-        { name: "Ring Tricep Extension", sets: "10" },
-        { name: "Band Pull-Apart", sets: "15" },
+        { name: "KB Side Plank Row", sets: "6 ea" },
+        { name: "KB Bent Press", sets: "3 ea" },
+        { name: "Band Rotational Chop", sets: "10 ea" },
         { name: "Note: 4 rounds, 60s rest between", sets: "" },
       ]},
       { day: "Friday", label: "Lower Strength", type: "lower", exercises: [
@@ -1398,19 +1408,19 @@ const templates = [
     desc: "Each day uses a different primary tool. Keeps things fresh, hits everything across the week.",
     days: [
       { day: "Monday", label: "Kettlebell Day", type: "upper", exercises: [
-        { name: "KB Single-Arm Press", sets: "4x5 ea" },
+        { name: "KB Clean to Rotational Press", sets: "4x5 ea" },
         { name: "KB Gorilla Row", sets: "4x8 ea" },
-        { name: "KB Floor Press", sets: "3x8 ea" },
-        { name: "KB Bent-Over Row", sets: "3x10 ea" },
+        { name: "KB Bent Press", sets: "3x3 ea" },
+        { name: "KB Windmill", sets: "3x5 ea" },
         { name: "KB Turkish Get-Up", sets: "2x2 ea" },
       ]},
       { day: "Tuesday", label: "Bar + Band Lower", type: "lower", exercises: [
-        { name: "KB Goblet Squat", sets: "4x10" },
+        { name: "KB Cossack Squat", sets: "4x6 ea" },
         { name: "KB Swing", sets: "5x15" },
-        { name: "Band Good Morning", sets: "3x12" },
-        { name: "KB Lateral Lunge", sets: "3x8 ea" },
-        { name: "Band Hip Thrust", sets: "3x15" },
-        { name: "Hanging Leg Raise", sets: "3x10" },
+        { name: "KB Rotational Deadlift", sets: "3x6 ea" },
+        { name: "KB Lateral Step Swing", sets: "3x8 ea" },
+        { name: "KB Curtsy Lunge", sets: "3x8 ea" },
+        { name: "Hanging Windshield Wiper", sets: "3x5 ea" },
       ]},
       { day: "Wednesday", label: "Mobility", type: "mobility", exercises: [
         { name: "KB Windmill", sets: "3x5 ea" },
@@ -1470,18 +1480,18 @@ const templates = [
       ]},
       { day: "Wednesday", label: "Legs", type: "lower", exercises: [
         { name: "KB Front Squat (Double)", sets: "4x6-8" },
-        { name: "KB Romanian Deadlift (Double)", sets: "4x8" },
-        { name: "KB Reverse Lunge", sets: "3x10 ea" },
-        { name: "KB Swing", sets: "4x15" },
+        { name: "KB Rotational Deadlift", sets: "3x6 ea" },
+        { name: "KB Curtsy Lunge", sets: "3x8 ea" },
+        { name: "KB Lateral Step Swing", sets: "3x8 ea" },
         { name: "KB Cossack Squat", sets: "3x6 ea" },
-        { name: "Band Hip Thrust", sets: "3x15" },
+        { name: "KB Side Swing", sets: "3x10 ea" },
       ]},
       { day: "Thursday", label: "Push (Volume)", type: "upper", exercises: [
-        { name: "KB Push Press", sets: "4x8 ea" },
+        { name: "KB Clean to Rotational Press", sets: "4x6 ea" },
         { name: "Ring Push-Up", sets: "4x12-15" },
         { name: "KB Floor Press", sets: "3x10 ea" },
-        { name: "Band Overhead Press", sets: "3x15" },
-        { name: "Band Tricep Pushdown", sets: "3x15" },
+        { name: "KB Bent Press", sets: "3x3 ea" },
+        { name: "Band Rotational Chop", sets: "3x10 ea" },
       ]},
       { day: "Friday", label: "Pull (Volume)", type: "upper", exercises: [
         { name: "Chin-Up", sets: "4x6-10" },
@@ -1517,9 +1527,9 @@ const templates = [
       ]},
       { day: "Tuesday", label: "Light Lower", type: "lower", exercises: [
         { name: "KB Goblet Squat (light)", sets: "3x8" },
-        { name: "KB Swing (light)", sets: "3x12" },
-        { name: "KB Reverse Lunge (bodyweight)", sets: "2x8 ea" },
-        { name: "Band Monster Walk", sets: "2x15 steps" },
+        { name: "KB Cossack Squat (light)", sets: "2x5 ea" },
+        { name: "KB Windmill (light)", sets: "2x5 ea" },
+        { name: "KB Around the World", sets: "2x10 ea" },
       ]},
       { day: "Wednesday", label: "Mobility", type: "mobility", exercises: [
         { name: "World's Greatest Stretch", sets: "3x5 ea" },
@@ -1581,12 +1591,12 @@ const templates = [
         { name: "Band External Rotation", sets: "2x15 ea" },
         { name: "Prone Y-T-W Raise", sets: "2x8 each" },
       ]},
-      { day: "Thursday", label: "Light Strength + Core", type: "lower", exercises: [
-        { name: "KB Goblet Squat (light)", sets: "3x8" },
-        { name: "KB Swing (light)", sets: "3x12" },
-        { name: "Band Monster Walk", sets: "2x15 steps" },
-        { name: "Hollow Body Hold", sets: "3x20s" },
-        { name: "Band Pallof Press", sets: "2x8 ea" },
+      { day: "Thursday", label: "Light Strength + Rotation", type: "lower", exercises: [
+        { name: "KB Cossack Squat (light)", sets: "3x5 ea" },
+        { name: "KB Side Swing (light)", sets: "2x8 ea" },
+        { name: "KB Figure 8", sets: "2x10 ea" },
+        { name: "KB Around the World", sets: "2x10 ea" },
+        { name: "Band Rotational Chop (light)", sets: "2x8 ea" },
       ]},
       { day: "Friday", label: "Full Body Mobility", type: "mobility", exercises: [
         { name: "KB Turkish Get-Up (light)", sets: "3x1 ea" },
@@ -2758,13 +2768,26 @@ function renderTemplateWeek(t) {
     </div>`;
 }
 
-function renderTemplates() {
+let templateShuffled = false;
+let shuffledTemplates = [...templates];
+
+function renderTemplates(showOnly) {
+  let pool = templateShuffled ? shuffledTemplates : templates;
   const filtered = activeTemplateFilter === 'all'
-    ? templates
-    : templates.filter(t => t.cat === activeTemplateFilter);
-  document.getElementById('templateGrid').innerHTML = filtered.length
-    ? filtered.map(renderTemplateWeek).join('')
-    : '<div class="no-results">No templates in this category.</div>';
+    ? pool
+    : pool.filter(t => t.cat === activeTemplateFilter);
+
+  if (showOnly) {
+    // "Surprise Me" — show just one random template
+    const pick = filtered[Math.floor(Math.random() * filtered.length)];
+    document.getElementById('templateGrid').innerHTML = pick
+      ? '<p style="color:var(--muted); margin-bottom:12px; font-style:italic;">Here\'s your pick — hit Surprise Me again for another one.</p>' + renderTemplateWeek(pick)
+      : '<div class="no-results">No templates in this category.</div>';
+  } else {
+    document.getElementById('templateGrid').innerHTML = filtered.length
+      ? filtered.map(renderTemplateWeek).join('')
+      : '<div class="no-results">No templates in this category.</div>';
+  }
 }
 
 // ============================================================
@@ -2835,15 +2858,17 @@ const similarityGroups = [
   // ── PULL-UPS — one pull-up variation per workout ──────────
   ["Pull-Up", "Wide-Grip Pull-Up", "Close-Grip Chin-Up", "Chin-Up", "Mixed-Grip Pull-Up", "Archer Pull-Up", "Typewriter Pull-Up", "Scapular Pull-Up", "Negative Pull-Up", "Muscle-Up (Bar)"],
   // ── RING PUSH — one ring push per workout ─────────────────
-  ["Ring Push-Up", "Ring Pike Push-Up", "Ring Dip", "Ring Bulgarian Dip", "Ring Fly", "Ring Fall-Out", "Pseudo Planche Push-Up"],
+  ["Ring Push-Up", "Ring Pike Push-Up", "Ring Dip", "Ring Bulgarian Dip", "Ring Fly", "Ring Fall-Out", "Pseudo Planche Push-Up", "Ring Archer Push-Up", "Ring Turn-Out Push-Up"],
   // ── RING PULL ─────────────────────────────────────────────
-  ["Ring Face Pull", "Band Face Pull"],
+  ["Ring Face Pull", "Band Face Pull", "Ring Reverse Fly"],
   ["Ring Bicep Curl", "Ring Pelican Curl", "KB Crush Curl"],
   // ── RING CORE / HOLDS ─────────────────────────────────────
   ["Ring Support Hold", "Ring L-Sit", "L-Sit (Floor)"],
-  ["Ring Ab Rollout", "Ring Body Saw", "Ring Knee Tuck"],
+  ["Ring Ab Rollout", "Ring Body Saw", "Ring Knee Tuck", "Ring Rollout to Pike", "Ring Pendulum Swing"],
   ["Ring Plank", "Ring Skin the Cat", "Skin the Cat (Bar)", "Ring Iron Cross (Negative)"],
   ["Ring Muscle-Up", "Ring Tricep Extension"],
+  // ── RING LOWER ────────────────────────────────────────────
+  ["Ring Hamstring Curl", "Ring Single-Leg Squat (Assisted)"],
   // ── BAND STRENGTH ─────────────────────────────────────────
   ["Band Pull-Apart", "Band Reverse Fly"],
   ["Band Pallof Press", "Band Rotational Chop", "Band Low-to-High Lift"],
@@ -2904,8 +2929,23 @@ const splitMap = {
 const pushMuscles = ["chest","triceps","shoulders"];
 const pullMuscles = ["back","biceps","lats","rear delts","upper back"];
 
+// Movement pattern categories for smart programming
+const movementPatterns = {
+  upperPush:    ex => ex.split === 'upper' && ex.muscles.some(m => pushMuscles.includes(m)),
+  upperPull:    ex => ex.split === 'upper' && ex.muscles.some(m => pullMuscles.includes(m)),
+  squat:        ex => ex.split === 'lower' && ex.muscles.some(m => ['quads','glutes','adductors'].includes(m)) && !ex.muscles.includes('hamstrings'),
+  hinge:        ex => (ex.split === 'lower' || ex.split === 'full') && ex.muscles.some(m => ['hamstrings','glutes'].includes(m)) && ex.name.match(/deadlift|rdl|swing|snatch|clean|hinge|good morning/i),
+  lunge:        ex => ex.split === 'lower' && ex.name.match(/lunge|step-up|cossack|split squat|curtsy|pistol|shrimp/i),
+  core:         ex => (ex.split === 'core' || ex.muscles.some(m => ['core','obliques'].includes(m))) && ex.type === 'strength',
+  carry:        ex => ex.name.match(/carry|walk|farmer|waiter|suitcase|march/i),
+  rotational:   ex => ex.name.match(/rotational|windmill|bent press|side swing|figure.8|around the|chop|windshield/i),
+  mobility:     ex => ex.type === 'mobility',
+  explosive:    ex => ex.type === 'power' || ex.name.match(/snatch|clean|jump|broad|swing/i),
+};
+
 function generateSingleWorkout() {
-  const goal = document.getElementById('genGoal').value;
+  let goal = document.getElementById('genGoal').value;
+  if (goal === 'mixed') goal = ['strength','hypertrophy','conditioning','power'][Math.floor(Math.random() * 4)];
   const split = document.getElementById('genSplit').value;
   const count = parseInt(document.getElementById('genCount').value) || 6;
   const time = parseInt(document.getElementById('genTime').value) || 30;
@@ -2917,11 +2957,11 @@ function generateSingleWorkout() {
   const sm = splitMap[split];
 
   // Filter exercises by equipment and split
-  let pool = exercises.filter(ex => {
+  const pool = exercises.filter(ex => {
     const equipMatch = ex.equip.some(e => checkedEquip.includes(e));
-    const splitMatch = sm.splits.includes(ex.split);
+    const splitMatch = sm.splits.includes(ex.split) || ex.split === 'core' || ex.split === 'full';
     const typeMatch = goal === 'mobility'
-      ? true  // for mobility, allow everything but prefer mobility type
+      ? true
       : cfg.types.includes(ex.type) || ex.type === 'strength';
     return equipMatch && splitMatch && typeMatch;
   });
@@ -2929,39 +2969,134 @@ function generateSingleWorkout() {
   if (pool.length < 3) return { error: "Not enough exercises match your filters. Try adding more equipment or changing the split." };
 
   let selected = [];
+  const usedNames = new Set();
+  const usedGroups = new Set();
 
-  // Ensure push/pull balance for upper and push-pull splits
-  if (sm.mustHavePush) {
-    const pushPool = pool.filter(ex => ex.muscles.some(m => pushMuscles.includes(m)));
-    const pullPool = pool.filter(ex => ex.muscles.some(m => pullMuscles.includes(m)));
-    const pushCount = Math.max(1, Math.floor(count / 2));
-    const pullCount = count - pushCount;
-    selected = [...smartPick(pushPool, pushCount), ...smartPick(pullPool, pullCount)];
-    // If we're short, fill from general pool
-    if (selected.length < count) {
-      const remaining = pool.filter(ex => !selected.includes(ex));
-      selected = [...selected, ...smartPick(remaining, count - selected.length)];
+  // Smart pick that respects already-selected exercises
+  function slotPick(arr, n) {
+    const filtered = arr.filter(ex => !usedNames.has(ex.name));
+    const shuffled = shuffle(filtered);
+    const picks = [];
+    for (const ex of shuffled) {
+      if (picks.length >= n) break;
+      const gIdx = similarityGroups.findIndex(g => g.includes(ex.name));
+      if (gIdx !== -1 && usedGroups.has(gIdx)) continue;
+      picks.push(ex);
+      usedNames.add(ex.name);
+      if (gIdx !== -1) usedGroups.add(gIdx);
     }
-  } else {
-    // For mobility goal, prefer mobility type exercises
+    return picks;
+  }
+
+  // ─── SLOT-BASED PROGRAMMING ───
+  // Each split has a recipe: which movement patterns to fill and in what order (compound first, accessory last)
+
+  if (split === 'upper' || split === 'push-pull') {
+    // Recipe: 1 main push + 1 main pull + 1 secondary push + 1 secondary pull + 1 core/carry/rotational + fill
+    const pushPool = pool.filter(movementPatterns.upperPush);
+    const pullPool = pool.filter(movementPatterns.upperPull);
+    const corePool = pool.filter(ex => movementPatterns.core(ex) || movementPatterns.carry(ex) || movementPatterns.rotational(ex));
+
+    const pushCount = Math.max(1, Math.ceil(count * 0.35));
+    const pullCount = Math.max(1, Math.ceil(count * 0.35));
+    const accessoryCount = Math.max(1, count - pushCount - pullCount);
+
+    selected = [
+      ...slotPick(pushPool, pushCount),
+      ...slotPick(pullPool, pullCount),
+      ...slotPick(corePool, accessoryCount),
+    ];
+
+  } else if (split === 'lower') {
+    // Recipe: 1 squat + 1 hinge + 1 lunge/unilateral + 1 explosive + 1 core/rotational + fill
+    const squatPool = pool.filter(movementPatterns.squat);
+    const hingePool = pool.filter(movementPatterns.hinge);
+    const lungePool = pool.filter(movementPatterns.lunge);
+    const explosivePool = pool.filter(movementPatterns.explosive);
+    const corePool = pool.filter(ex => movementPatterns.core(ex) || movementPatterns.rotational(ex));
+
+    // At least one of each key pattern
+    selected = [
+      ...slotPick(squatPool, 1),
+      ...slotPick(hingePool, 1),
+      ...slotPick(lungePool, 1),
+    ];
+
+    // Fill remaining slots with a mix
+    const remaining = count - selected.length;
+    if (remaining > 0) {
+      // Try to include an explosive and a core exercise
+      if (remaining >= 2) {
+        selected.push(...slotPick(explosivePool, 1));
+        selected.push(...slotPick(corePool, 1));
+        if (selected.length < count) {
+          const fill = pool.filter(ex => !usedNames.has(ex.name));
+          selected.push(...slotPick(fill, count - selected.length));
+        }
+      } else {
+        const fill = [...explosivePool, ...corePool].filter(ex => !usedNames.has(ex.name));
+        selected.push(...slotPick(fill, remaining));
+      }
+    }
+
+  } else if (split === 'full') {
     if (goal === 'mobility') {
-      const mobilityPool = pool.filter(ex => ex.type === 'mobility');
-      const otherPool = pool.filter(ex => ex.type !== 'mobility');
-      const mobCount = Math.min(mobilityPool.length, Math.ceil(count * 0.6));
-      selected = [...smartPick(mobilityPool, mobCount), ...smartPick(otherPool, count - mobCount)];
+      // Recipe: mobility-focused with some light strength
+      const mobPool = pool.filter(movementPatterns.mobility);
+      const rotPool = pool.filter(movementPatterns.rotational);
+      const stretchPool = pool.filter(ex => !movementPatterns.mobility(ex) && !movementPatterns.rotational(ex));
+
+      const mobCount = Math.max(2, Math.ceil(count * 0.5));
+      const rotCount = Math.max(1, Math.ceil(count * 0.25));
+      selected = [
+        ...slotPick(mobPool, mobCount),
+        ...slotPick(rotPool, rotCount),
+        ...slotPick(stretchPool, count - mobCount - rotCount),
+      ];
     } else {
-      selected = smartPick(pool, count);
+      // Full body recipe: 1 push + 1 pull + 1 squat/lunge + 1 hinge/explosive + 1 core + fill
+      const pushPool = pool.filter(movementPatterns.upperPush);
+      const pullPool = pool.filter(movementPatterns.upperPull);
+      const squatPool = pool.filter(ex => movementPatterns.squat(ex) || movementPatterns.lunge(ex));
+      const hingePool = pool.filter(ex => movementPatterns.hinge(ex) || movementPatterns.explosive(ex));
+      const corePool = pool.filter(ex => movementPatterns.core(ex) || movementPatterns.carry(ex) || movementPatterns.rotational(ex));
+
+      selected = [
+        ...slotPick(pushPool, 1),
+        ...slotPick(pullPool, 1),
+        ...slotPick(squatPool, 1),
+        ...slotPick(hingePool, 1),
+        ...slotPick(corePool, 1),
+      ];
+      if (selected.length < count) {
+        const fill = pool.filter(ex => !usedNames.has(ex.name));
+        selected.push(...slotPick(fill, count - selected.length));
+      }
     }
   }
 
   selected = selected.slice(0, count);
+
+  // ─── SMART ORDERING ───
+  // Compound/explosive first → strength → accessory/core → carries last
+  const orderScore = (ex) => {
+    if (ex.type === 'power' || ex.name.match(/snatch|clean|jerk/i)) return 0;
+    if (ex.name.match(/squat|deadlift|press|pull-up|dip|row/i) && !ex.name.match(/pallof|face pull|curl/i)) return 1;
+    if (movementPatterns.lunge(ex)) return 2;
+    if (movementPatterns.rotational(ex)) return 3;
+    if (movementPatterns.core(ex)) return 4;
+    if (movementPatterns.carry(ex)) return 5;
+    if (ex.type === 'mobility') return 6;
+    return 3;
+  };
+  selected.sort((a, b) => orderScore(a) - orderScore(b));
 
   // Generate sets/reps based on goal
   const workout = selected.map(ex => {
     const sets = cfg.setsLow + Math.floor(Math.random() * (cfg.setsHigh - cfg.setsLow + 1));
     let reps;
     if (ex.type === 'mobility') {
-      reps = ex.sets; // keep the original mobility prescription
+      reps = ex.sets;
     } else if (goal === 'conditioning' && Math.random() > 0.5) {
       reps = `${sets}x${cfg.repsLow + Math.floor(Math.random() * (cfg.repsHigh - cfg.repsLow + 1))}`;
     } else {
@@ -3018,70 +3153,198 @@ function generateAndRender() {
 
 function generateFullWeek() {
   const container = document.getElementById('genOutput');
+  const checkedEquip = [...document.querySelectorAll('.gen-equip:checked')].map(c => c.value);
+  if (checkedEquip.length === 0) { container.innerHTML = '<div class="no-results">Check at least one piece of equipment.</div>'; return; }
+
   const goal = document.getElementById('genGoal').value;
-  const split = document.getElementById('genSplit').value;
-  const count = parseInt(document.getElementById('genCount').value) || 6;
-  const time = parseInt(document.getElementById('genTime').value) || 30;
+  const exPerDay = parseInt(document.getElementById('genCount').value) || 5;
 
-  // Build a week: 4 strength days + 1 mobility + 1 cardio + rest
-  const dayNames = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
-
-  // Save original settings
-  const origGoal = document.getElementById('genGoal').value;
-  const origSplit = document.getElementById('genSplit').value;
-
-  const weekPlan = [
-    { day: "Monday", goalOverride: goal, splitOverride: "upper" },
-    { day: "Tuesday", goalOverride: goal, splitOverride: "lower" },
-    { day: "Wednesday", goalOverride: "mobility", splitOverride: "full" },
-    { day: "Thursday", goalOverride: goal, splitOverride: "upper" },
-    { day: "Friday", goalOverride: goal, splitOverride: "lower" },
-    { day: "Saturday", goalOverride: "conditioning", splitOverride: "full" },
-    { day: "Sunday", rest: true },
+  // ─── Mixed week structures — randomly picked ───
+  const mixedWeeks = [
+    { title: "Strength + Conditioning Mix", plan: [
+      { day: "Monday",    label: "Upper Strength",  type: "upper",    focus: "push",  goal: "strength" },
+      { day: "Tuesday",   label: "Lower Conditioning", type: "lower", focus: null,    goal: "conditioning" },
+      { day: "Wednesday", label: "Mobility + Flow",type: "mobility",  focus: null,    goal: "mobility" },
+      { day: "Thursday",  label: "Upper Strength",  type: "upper",    focus: "pull",  goal: "strength" },
+      { day: "Friday",    label: "Lower Power",    type: "lower",    focus: null,    goal: "power" },
+      { day: "Saturday",  label: "Full Conditioning",type: "cardio",  focus: null,    goal: "conditioning" },
+      { day: "Sunday",    label: "Rest",           type: "rest",     focus: null,    goal: null },
+    ]},
+    { title: "Hypertrophy + Power Mix", plan: [
+      { day: "Monday",    label: "Upper Hypertrophy",type: "upper",   focus: "push",  goal: "hypertrophy" },
+      { day: "Tuesday",   label: "Lower Power",    type: "lower",    focus: null,    goal: "power" },
+      { day: "Wednesday", label: "Mobility + Flow",type: "mobility",  focus: null,    goal: "mobility" },
+      { day: "Thursday",  label: "Upper Hypertrophy",type: "upper",   focus: "pull",  goal: "hypertrophy" },
+      { day: "Friday",    label: "Lower Hypertrophy",type: "lower",  focus: null,    goal: "hypertrophy" },
+      { day: "Saturday",  label: "Conditioning",   type: "cardio",   focus: null,    goal: "conditioning" },
+      { day: "Sunday",    label: "Rest",           type: "rest",     focus: null,    goal: null },
+    ]},
+    { title: "Strength + Hypertrophy Mix", plan: [
+      { day: "Monday",    label: "Upper Strength",  type: "upper",    focus: "push",  goal: "strength" },
+      { day: "Tuesday",   label: "Lower Hypertrophy",type: "lower",  focus: null,    goal: "hypertrophy" },
+      { day: "Wednesday", label: "Mobility + Flow",type: "mobility",  focus: null,    goal: "mobility" },
+      { day: "Thursday",  label: "Upper Hypertrophy",type: "upper",   focus: "pull",  goal: "hypertrophy" },
+      { day: "Friday",    label: "Lower Strength",  type: "lower",   focus: null,    goal: "strength" },
+      { day: "Saturday",  label: "Power Conditioning",type: "cardio", focus: null,    goal: "power" },
+      { day: "Sunday",    label: "Rest",           type: "rest",     focus: null,    goal: null },
+    ]},
+    { title: "Power + Conditioning Mix", plan: [
+      { day: "Monday",    label: "Upper Power",     type: "upper",    focus: "push",  goal: "power" },
+      { day: "Tuesday",   label: "Lower Conditioning",type: "lower",  focus: null,    goal: "conditioning" },
+      { day: "Wednesday", label: "Mobility + Flow",type: "mobility",  focus: null,    goal: "mobility" },
+      { day: "Thursday",  label: "Upper Conditioning",type: "upper",  focus: "pull",  goal: "conditioning" },
+      { day: "Friday",    label: "Lower Power",    type: "lower",    focus: null,    goal: "power" },
+      { day: "Saturday",  label: "Full Conditioning",type: "cardio",  focus: null,    goal: "conditioning" },
+      { day: "Sunday",    label: "Rest",           type: "rest",     focus: null,    goal: null },
+    ]},
+    { title: "Everything Week", plan: [
+      { day: "Monday",    label: "Upper Strength",  type: "upper",    focus: "push",  goal: "strength" },
+      { day: "Tuesday",   label: "Lower Hypertrophy",type: "lower",  focus: null,    goal: "hypertrophy" },
+      { day: "Wednesday", label: "Mobility + Flow",type: "mobility",  focus: null,    goal: "mobility" },
+      { day: "Thursday",  label: "Upper Power",    type: "upper",    focus: "pull",  goal: "power" },
+      { day: "Friday",    label: "Lower Conditioning",type: "lower", focus: null,    goal: "conditioning" },
+      { day: "Saturday",  label: "Strength Conditioning",type: "cardio",focus: null,  goal: "strength" },
+      { day: "Sunday",    label: "Rest",           type: "rest",     focus: null,    goal: null },
+    ]},
   ];
 
-  let html = '<div class="template-section"><h2>Your Generated Week</h2><p class="gen-note">Built from your exercise library with randomized selection. Hit Generate Full Week again for a completely different program.</p><div class="week-grid">';
+  // ─── Week structure ───
+  let weekPlan, weekTitle;
+  if (goal === 'mixed') {
+    const mix = mixedWeeks[Math.floor(Math.random() * mixedWeeks.length)];
+    weekPlan = mix.plan;
+    weekTitle = mix.title;
+  } else {
+    weekPlan = [
+      { day: "Monday",    label: "Upper Push",    type: "upper",    focus: "push",  goal: goal },
+      { day: "Tuesday",   label: "Lower Grind",   type: "lower",    focus: null,    goal: goal },
+      { day: "Wednesday", label: "Mobility + Flow",type: "mobility", focus: null,    goal: "mobility" },
+      { day: "Thursday",  label: "Upper Pull",    type: "upper",    focus: "pull",  goal: goal },
+      { day: "Friday",    label: "Lower Power",   type: "lower",    focus: null,    goal: goal === "strength" ? "power" : goal },
+      { day: "Saturday",  label: "Conditioning",  type: "cardio",   focus: null,    goal: "conditioning" },
+      { day: "Sunday",    label: "Rest",          type: "rest",     focus: null,    goal: null },
+    ];
+    weekTitle = null;
+  }
+
+  // Track used exercises AND used similarity groups across the ENTIRE week
+  const weekUsedNames = new Set();
+  const weekUsedGroups = new Set();
+
+  function weekSmartPick(arr, n) {
+    const shuffled = shuffle(arr);
+    const selected = [];
+    const dayGroups = new Set();
+    for (const ex of shuffled) {
+      if (selected.length >= n) break;
+      if (weekUsedNames.has(ex.name)) continue; // no repeats across the week
+      const gIdx = similarityGroups.findIndex(g => g.includes(ex.name));
+      if (gIdx !== -1 && dayGroups.has(gIdx)) continue;    // no similar within this day
+      if (gIdx !== -1 && weekUsedGroups.has(gIdx)) continue; // no similar across week either
+      selected.push(ex);
+      if (gIdx !== -1) dayGroups.add(gIdx);
+    }
+    // If too constrained, relax week-group restriction but keep day-group and name restriction
+    if (selected.length < n) {
+      const dayGroups2 = new Set([...dayGroups]);
+      for (const ex of shuffled) {
+        if (selected.length >= n) break;
+        if (weekUsedNames.has(ex.name)) continue;
+        if (selected.includes(ex)) continue;
+        const gIdx = similarityGroups.findIndex(g => g.includes(ex.name));
+        if (gIdx !== -1 && dayGroups2.has(gIdx)) continue;
+        selected.push(ex);
+        if (gIdx !== -1) dayGroups2.add(gIdx);
+      }
+    }
+    // Last resort: just fill with anything not used this week
+    if (selected.length < n) {
+      for (const ex of shuffled) {
+        if (selected.length >= n) break;
+        if (!weekUsedNames.has(ex.name) && !selected.includes(ex)) selected.push(ex);
+      }
+    }
+    return selected.slice(0, n);
+  }
+
+  function prescribe(ex, dayGoal) {
+    const cfg = goalConfig[dayGoal] || goalConfig.strength;
+    if (ex.type === 'mobility') return ex.sets;
+    const sets = cfg.setsLow + Math.floor(Math.random() * (cfg.setsHigh - cfg.setsLow + 1));
+    const r = cfg.repsLow + Math.floor(Math.random() * (cfg.repsHigh - cfg.repsLow + 1));
+    const uni = ex.sets.includes('each') || ex.sets.includes('ea');
+    return `${sets}x${r}${uni ? ' ea' : ''}`;
+  }
+
+  // ─── Week style titles ───
+  const goalTitles = {
+    strength: "Strength",
+    hypertrophy: "Hypertrophy",
+    conditioning: "Conditioning",
+    power: "Power",
+    mobility: "Mobility",
+  };
+  const displayTitle = weekTitle || ((goalTitles[goal] || "Custom") + " Week");
+
+  let html = `<div class="template-section"><h2>${displayTitle}</h2><p class="gen-note">Dynamically generated — no exercise repeats across the week, no similar movements on the same day. Hit Generate Full Week again for a completely different program.</p><div class="week-grid">`;
 
   weekPlan.forEach(wp => {
-    if (wp.rest) {
-      html += `
-        <div class="day-card">
-          <div class="day-header">Sunday<span class="day-type type-rest">Rest</span></div>
-          <div class="day-body"><div class="day-exercise"><span class="ex-name">Walk, stretch, or light play</span><span class="ex-sets">Enjoy it</span></div></div>
-        </div>`;
+    if (wp.type === 'rest') {
+      html += `<div class="day-card"><div class="day-header">${wp.day}<span class="day-type type-rest">${wp.label}</span></div><div class="day-body"><div class="day-exercise"><span class="ex-name">Walk, stretch, or light play</span><span class="ex-sets">Enjoy it</span></div></div></div>`;
       return;
     }
 
-    // Temporarily set the selectors
-    document.getElementById('genGoal').value = wp.goalOverride;
-    document.getElementById('genSplit').value = wp.splitOverride;
+    const dayGoal = wp.goal;
+    const cfg = goalConfig[dayGoal] || goalConfig.strength;
 
-    const result = generateSingleWorkout();
-    const typeClass = wp.goalOverride === 'mobility' ? 'mobility' : wp.goalOverride === 'conditioning' ? 'cardio' : wp.splitOverride;
-    const label = wp.goalOverride === 'mobility' ? 'Mobility + Flow'
-      : wp.goalOverride === 'conditioning' ? 'Conditioning'
-      : wp.splitOverride === 'upper' ? 'Upper ' + goal.charAt(0).toUpperCase() + goal.slice(1)
-      : 'Lower ' + goal.charAt(0).toUpperCase() + goal.slice(1);
-
-    if (result.error) {
-      html += `<div class="day-card"><div class="day-header">${wp.day}<span class="day-type type-${typeClass}">${label}</span></div><div class="day-body"><div class="day-exercise"><span class="ex-name">${result.error}</span><span class="ex-sets"></span></div></div></div>`;
+    // Build pool for this day
+    let pool;
+    if (wp.type === 'mobility') {
+      pool = exercises.filter(ex => ex.equip.some(e => checkedEquip.includes(e)) && (ex.type === 'mobility' || ex.split === 'core'));
+    } else if (wp.type === 'cardio') {
+      pool = exercises.filter(ex => ex.equip.some(e => checkedEquip.includes(e)) && (ex.type === 'cardio' || ex.type === 'power' || ex.type === 'strength'));
+    } else if (wp.type === 'upper') {
+      pool = exercises.filter(ex => ex.equip.some(e => checkedEquip.includes(e)) && (ex.split === 'upper' || ex.split === 'full'));
     } else {
-      html += `
-        <div class="day-card">
-          <div class="day-header">${wp.day}<span class="day-type type-${typeClass}">${label}</span></div>
-          <div class="day-body">
-            ${result.workout.map(e => `<div class="day-exercise"><span class="ex-name">${e.name}</span><span class="ex-sets">${e.sets}</span></div>`).join('')}
-          </div>
-        </div>`;
+      pool = exercises.filter(ex => ex.equip.some(e => checkedEquip.includes(e)) && (ex.split === 'lower' || ex.split === 'full'));
     }
+
+    let dayExercises;
+    if (wp.focus === 'push') {
+      const pushPool = pool.filter(ex => ex.muscles.some(m => pushMuscles.includes(m)));
+      const corePool = pool.filter(ex => ex.muscles.some(m => ['core','obliques'].includes(m)));
+      dayExercises = [...weekSmartPick(pushPool, exPerDay - 1), ...weekSmartPick(corePool, 1)];
+    } else if (wp.focus === 'pull') {
+      const pullPool = pool.filter(ex => ex.muscles.some(m => pullMuscles.includes(m)));
+      const corePool = pool.filter(ex => ex.muscles.some(m => ['core','obliques'].includes(m)));
+      dayExercises = [...weekSmartPick(pullPool, exPerDay - 1), ...weekSmartPick(corePool, 1)];
+    } else if (wp.type === 'mobility') {
+      const mobPool = pool.filter(ex => ex.type === 'mobility');
+      const stretchPool = pool.filter(ex => ex.type !== 'mobility');
+      const mobCount = Math.min(mobPool.length, Math.ceil(exPerDay * 0.7));
+      dayExercises = [...weekSmartPick(mobPool, mobCount), ...weekSmartPick(stretchPool, exPerDay - mobCount)];
+    } else {
+      dayExercises = weekSmartPick(pool, exPerDay);
+    }
+
+    dayExercises = dayExercises.slice(0, exPerDay);
+
+    // Mark these as used for the week
+    dayExercises.forEach(ex => {
+      weekUsedNames.add(ex.name);
+      const gIdx = similarityGroups.findIndex(g => g.includes(ex.name));
+      if (gIdx !== -1) weekUsedGroups.add(gIdx);
+    });
+
+    const typeClass = wp.type === 'cardio' ? 'cardio' : wp.type === 'mobility' ? 'mobility' : wp.type;
+    html += `<div class="day-card"><div class="day-header">${wp.day}<span class="day-type type-${typeClass}">${wp.label}</span></div><div class="day-body">`;
+    dayExercises.forEach(ex => {
+      html += `<div class="day-exercise"><span class="ex-name">${ex.name}</span><span class="ex-sets">${prescribe(ex, dayGoal)}</span></div>`;
+    });
+    html += `</div></div>`;
   });
 
   html += '</div></div>';
-
-  // Restore original settings
-  document.getElementById('genGoal').value = origGoal;
-  document.getElementById('genSplit').value = origSplit;
-
   container.innerHTML = html;
 }
 
@@ -3173,6 +3436,13 @@ document.querySelectorAll('.wfilter').forEach(btn => {
     btn.classList.add('active');
     renderWarmup(value);
   });
+});
+
+document.getElementById('surpriseMeBtn').addEventListener('click', () => renderTemplates(true));
+document.getElementById('shuffleBtn').addEventListener('click', () => {
+  shuffledTemplates = shuffle([...templates]);
+  templateShuffled = true;
+  renderTemplates();
 });
 
 document.getElementById('generateBtn').addEventListener('click', generateAndRender);
