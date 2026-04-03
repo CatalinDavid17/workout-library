@@ -2783,64 +2783,83 @@ function pick(arr, n) { return shuffle(arr).slice(0, n); }
 
 // Similarity groups — exercises that are too alike to appear in the same workout
 const similarityGroups = [
-  // Squats
-  ["KB Goblet Squat", "KB Horn Squat", "KB 1.5 Rep Goblet Squat", "KB Tempo Goblet Squat (4-1-2)", "KB Goblet Squat (pause 3s)", "KB Goblet Squat Hold (Isometric)"],
-  ["KB Front Squat (Double)", "KB Overhead Squat", "KB Sotts Press"],
+  // ── SQUATS ────────────────────────────────────────────────
+  ["KB Goblet Squat", "KB Horn Squat", "KB 1.5 Rep Goblet Squat", "KB Tempo Goblet Squat (4-1-2)", "KB Goblet Squat Hold (Isometric)", "KB Box Squat", "KB Squat to Curl"],
+  ["KB Front Squat (Double)", "KB Overhead Squat", "KB Sotts Press", "KB Thruster"],
   ["KB Pistol Squat", "Shrimp Squat", "Sissy Squat"],
   ["KB Cossack Squat", "KB Squat to Lateral Lunge Flow"],
   ["KB Bulgarian Split Squat", "KB Split Squat (Overhead Hold)"],
-  // Swings
-  ["KB Swing", "KB Double Swing", "KB Dead-Stop Swing", "KB Swing (Hand-to-Hand)"],
+  ["KB Deck Squat", "KB Loaded Beast"],
+  // ── SWINGS ────────────────────────────────────────────────
+  ["KB Swing", "KB Double Swing", "KB Dead-Stop Swing", "KB Swing (Hand-to-Hand)", "KB Hike Pass"],
   ["KB Single-Arm Swing", "KB Walking Swing", "KB Skier Swing"],
   ["KB Lateral Step Swing", "KB Side Swing"],
-  // Cleans
+  // ── CLEANS ────────────────────────────────────────────────
   ["KB Clean", "KB Dead Clean", "KB Swing Clean", "KB Gorilla Clean", "KB Lateral Clean", "KB Bottoms-Up Clean"],
-  ["KB Clean & Press", "KB Clean & Jerk", "KB Clean, Squat & Press"],
-  // Presses
-  ["KB Single-Arm Press", "KB Push Press", "KB Viking Push Press", "KB See-Saw Press"],
+  ["KB Clean & Press", "KB Clean & Jerk", "KB Clean, Squat & Press", "KB Double Clean & Squat", "KB Double Long Cycle"],
+  // ── PRESSES (overhead) ────────────────────────────────────
+  ["KB Single-Arm Press", "KB Push Press", "KB Viking Push Press", "KB See-Saw Press", "KB Double Press", "KB Scorpion Press"],
   ["KB Floor Press", "KB Crush Press"],
   ["KB Half-Kneeling Press", "KB Z-Press", "KB Kneeling Halo to Press"],
   ["KB Bottoms-Up Press", "KB Bent Press", "KB Long Press"],
   ["KB Slow Clean to Eccentric Press", "KB Clean to Rotational Press"],
-  // Rows
-  ["KB Bent-Over Row", "KB Gorilla Row", "KB Chest-Supported Row", "KB Crush Grip Row"],
-  ["KB Renegade Row", "KB Plank Row", "KB Side Plank Row"],
-  // Deadlifts / Hinges
+  ["KB Goblet Squat to Press", "KB Lunge to Press", "KB Reverse Lunge to Press", "KB Snatch to Forward Lunge"],
+  // ── ROWS — one row per workout ────────────────────────────
+  ["KB Bent-Over Row", "KB Gorilla Row", "KB Chest-Supported Row", "KB Crush Grip Row", "KB Renegade Row", "KB Plank Row", "KB Side Plank Row", "Ring Row (Inverted Row)", "Ring Archer Row", "KB Single-Leg Romanian Deadlift to Row", "KB Upright Row"],
+  // ── DEADLIFTS / HINGES ────────────────────────────────────
   ["KB Single-Arm Deadlift", "KB Sumo Deadlift", "KB Deficit Deadlift"],
   ["KB Single-Leg Deadlift", "KB Staggered-Stance Deadlift", "KB Figure-4 Deadlift", "KB Rotational Deadlift"],
-  ["KB Romanian Deadlift (Double)", "KB RDL to Snatch"],
-  // Lunges
-  ["KB Reverse Lunge", "KB Offset Reverse Lunge", "KB Reverse Lunge (rack hold)"],
+  ["KB Romanian Deadlift (Double)", "KB Hip Hinge (Banded)", "Band Good Morning"],
+  // ── LUNGES ────────────────────────────────────────────────
+  ["KB Reverse Lunge", "KB Offset Reverse Lunge", "KB Alternating Lunge to Halo"],
   ["KB Front Rack Lunge Walk", "KB Tactical Lunge"],
   ["KB Curtsy Lunge", "KB Lateral Lunge"],
-  ["KB Lunge to Press", "KB Reverse Lunge to Press", "KB Snatch to Forward Lunge"],
-  // Snatches
-  ["KB Snatch", "KB Swing to Snatch", "KB RDL to Snatch", "KB Toe Touch to Snatch"],
-  // Get-Ups
-  ["KB Turkish Get-Up", "KB Half Get-Up"],
-  // Carries
-  ["KB Suitcase Carry", "KB Offset Farmer's Walk", "KB Farmer's Walk (Double)"],
-  ["KB Rack Carry", "KB Double Rack Carry"],
-  ["KB Overhead Carry", "KB Waiter Walk"],
-  // Core
-  ["KB Russian Twist", "KB Figure-8", "KB Around the World"],
-  ["KB Dead Bug Pullover", "KB Hollow Hold"],
+  ["KB Step-Up", "KB Single-Leg Hip Thrust"],
+  // ── SNATCHES ──────────────────────────────────────────────
+  ["KB Snatch", "KB Swing to Snatch", "KB RDL to Snatch", "KB Toe Touch to Snatch", "KB Swing + Snatch Combo", "KB Swing Snatch Flow", "KB High Pull"],
+  // ── GET-UPS ───────────────────────────────────────────────
+  ["KB Turkish Get-Up", "KB Half Get-Up", "KB Two-Hand Anyhow"],
+  // ── CARRIES — one carry per workout ───────────────────────
+  ["KB Suitcase Carry", "KB Offset Farmer's Walk", "KB Farmer's Walk (Double)", "KB Rack Carry", "KB Double Rack Carry", "KB Overhead Carry", "KB Waiter Walk", "KB Overhead March"],
+  // ── SHOULDER MOBILITY / HALOS ─────────────────────────────
+  ["KB Halo", "KB Around the World"],
+  ["KB Arm Bar", "KB Windmill"],
+  ["Band Dislocate", "Band Shoulder Pass-Through", "Band External Rotation"],
+  // ── CORE — KB ─────────────────────────────────────────────
+  ["KB Russian Twist", "KB Figure-8", "KB Side Bend"],
+  ["KB Dead Bug Pullover", "KB Hollow Hold", "Hollow Body Hold"],
   ["KB Plank Pull-Through", "KB Drag Crawl"],
-  ["KB Pullover", "KB Pullover to Sit-Up"],
-  // Pull-ups
-  ["Pull-Up", "Wide-Grip Pull-Up", "Close-Grip Chin-Up", "Chin-Up", "Mixed-Grip Pull-Up"],
-  ["Archer Pull-Up", "Typewriter Pull-Up"],
-  // Ring push
-  ["Ring Push-Up", "Ring Push-Up (feet elevated)", "Ring Pike Push-Up"],
-  ["Ring Dip", "Ring Bulgarian Dip"],
-  ["Ring Fly", "Ring Fall-Out"],
-  // Ring pull
-  ["Ring Row (Inverted Row)", "Ring Archer Row", "Ring Face Pull"],
-  ["Ring Bicep Curl", "Ring Pelican Curl"],
-  // Band
-  ["Band Pull-Apart", "Band Reverse Fly", "Band Face Pull"],
+  ["KB Pullover", "KB Pullover to Sit-Up", "KB Sit-Up (Weighted)"],
+  // ── CORE — HANGING ────────────────────────────────────────
+  ["Hanging Knee Raise", "Hanging Leg Raise", "Toes to Bar", "Hanging Windshield Wiper"],
+  // ── PULL-UPS — one pull-up variation per workout ──────────
+  ["Pull-Up", "Wide-Grip Pull-Up", "Close-Grip Chin-Up", "Chin-Up", "Mixed-Grip Pull-Up", "Archer Pull-Up", "Typewriter Pull-Up", "Scapular Pull-Up", "Negative Pull-Up", "Muscle-Up (Bar)"],
+  // ── RING PUSH — one ring push per workout ─────────────────
+  ["Ring Push-Up", "Ring Pike Push-Up", "Ring Dip", "Ring Bulgarian Dip", "Ring Fly", "Ring Fall-Out", "Pseudo Planche Push-Up"],
+  // ── RING PULL ─────────────────────────────────────────────
+  ["Ring Face Pull", "Band Face Pull"],
+  ["Ring Bicep Curl", "Ring Pelican Curl", "KB Crush Curl"],
+  // ── RING CORE / HOLDS ─────────────────────────────────────
+  ["Ring Support Hold", "Ring L-Sit", "L-Sit (Floor)"],
+  ["Ring Ab Rollout", "Ring Body Saw", "Ring Knee Tuck"],
+  ["Ring Plank", "Ring Skin the Cat", "Skin the Cat (Bar)", "Ring Iron Cross (Negative)"],
+  ["Ring Muscle-Up", "Ring Tricep Extension"],
+  // ── BAND STRENGTH ─────────────────────────────────────────
+  ["Band Pull-Apart", "Band Reverse Fly"],
   ["Band Pallof Press", "Band Rotational Chop", "Band Low-to-High Lift"],
-  ["Band Chest Press", "Band Overhead Press"],
+  ["Band Chest Press", "Band Overhead Press", "Band Overhead Tricep Extension"],
+  ["Band Lat Pulldown", "Band Bicep Curl"],
+  ["Band Tricep Pushdown"],
+  ["Band Hip Thrust", "Band Squat", "Band Monster Walk", "Band Hamstring Curl", "Band Hip Flexor March", "Band Terminal Knee Extension", "Nordic Curl (Eccentric)"],
+  // ── BODYWEIGHT CARDIO / PLYOS ─────────────────────────────
+  ["Burpee", "KB Man Maker", "KB Swing to Squat", "KB Swing to Squat Clean"],
+  ["Mountain Climber", "Bear Crawl"],
+  ["Broad Jump", "Jump Squat"],
+  // ── MOBILITY / STRETCHES ──────────────────────────────────
+  ["World's Greatest Stretch", "90/90 Hip Switch", "Deep Squat Hold"],
+  ["Cat-Cow", "Prone Y-T-W Raise", "Arch Hold (Superman)"],
+  // ── HANGS ─────────────────────────────────────────────────
+  ["Dead Hang", "Active Hang"],
 ];
 
 // Smart pick: pick n from arr, but avoid selecting multiple exercises from the same similarity group
